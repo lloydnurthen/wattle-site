@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
 <title>wattle sign-in</title>
 <style>
   body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
@@ -11,13 +12,63 @@
   main { max-width: 420px; text-align: center; }
   h1 { font-size: 24px; margin: 0 0 12px; }
   p { color: #5B6B64; font-size: 16px; line-height: 1.5; margin: 0; }
+  .bad h1 { color: #B42318; }
 </style>
 </head>
 <body>
-<main>
+<main id="m">
   <h1>Almost there</h1>
-  <p>This page finishes connecting your battery to wattle. If it doesn't move on by itself, go back to the wattle app and try again.</p>
+  <p>Taking you back to wattle to finish connecting your battery.</p>
 </main>
-<!-- Later: forwards the sign-in code to the wattle app on the home network. See docs/public-site.md in lloydnurthen/wattle. -->
+<noscript><p>This page needs JavaScript to pass your sign-in back to wattle.</p></noscript>
+<script>
+// Tesla sends people here after they sign in (the redirect URI registered with Tesla).
+// wattle itself runs on the home network, so this page forwards the sign-in code to
+// the wattle that started the sign-in. That address is inside the signed `state`;
+// wattle checks the signature, so this page only needs to refuse anything that
+// isn't a home-network or Tailscale address. See docs/public-site.md in lloydnurthen/wattle.
+(function () {
+  function fail(title, text) {
+    var m = document.getElementById('m');
+    m.className = 'bad';
+    m.innerHTML = '';
+    var h = document.createElement('h1'); h.textContent = title; m.appendChild(h);
+    var p = document.createElement('p'); p.textContent = text; m.appendChild(p);
+  }
+  function allowed(u) {
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return false;
+    var h = u.hostname;
+    if (h === 'wattle.nurthen.au') return false;                 // never back to this page
+    if (h === 'localhost' || h === '127.0.0.1') return true;
+    if (/^10\.\d+\.\d+\.\d+$/.test(h)) return true;
+    if (/^192\.168\.\d+\.\d+$/.test(h)) return true;
+    if (/^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/.test(h)) return true;
+    if (/^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d+\.\d+$/.test(h)) return true;   // Tailscale
+    if (/\.ts\.net$/.test(h)) return true;                                          // Tailscale names
+    if (/(^|\.)nurthen\.au$/.test(h) || /(^|\.)realaperture\.com\.au$/.test(h)) return u.protocol === 'https:';
+    return false;
+  }
+  var q = new URLSearchParams(location.search);
+  var state = q.get('state') || '';
+  var ret;
+  try {
+    var payload = state.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+    while (payload.length % 4) payload += '=';
+    ret = new URL(JSON.parse(atob(payload)).r);
+  } catch (e) {
+    fail('Sign-in link not recognised', 'Start again from wattle on your home network.');
+    return;
+  }
+  if (!allowed(ret)) {
+    fail('Sign-in link not recognised', 'This sign-in didn’t start from a wattle on your home network.');
+    return;
+  }
+  var dest = ret.origin + ret.pathname.replace(/\/$/, '') + '/auth/tesla/callback' + location.search;
+  location.replace(dest);
+  setTimeout(function () {
+    fail('Couldn’t reach wattle', 'Make sure this phone or computer is on your home wifi or Tailscale, then start again from wattle.');
+  }, 8000);
+})();
+</script>
 </body>
 </html>
