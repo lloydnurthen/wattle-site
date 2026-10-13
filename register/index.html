@@ -256,20 +256,42 @@ form.addEventListener("submit", async (e) => {
   try {
     const res = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const out = await res.json().catch(() => ({}));
+    if (res.status >= 500 || res.status === 404) throw Object.assign(new Error("unavailable"), { offline: true });
     if (!res.ok || !out.ok) throw new Error((out.problems || ["Something went wrong. Please try again in a minute."]).join(" "));
     $("thanks-title").textContent = "Thanks, " + body.first_name.trim() + ". We've got your details.";
     $("thanks-sub").textContent = "We've emailed a copy to " + body.email.trim() + " from wattle@nurthen.au. Here's what happens next.";
     form.hidden = true; $("thanks").hidden = false; window.scrollTo({ top: 0, behavior: "smooth" });
   } catch (err) {
-    showProblems([err.message === "Failed to fetch" ? "We couldn't reach wattle. Check your connection and try again." : err.message]);
+    if (err instanceof TypeError || err.offline) {
+      // wattle's form service isn't reachable (offline, or not switched on yet): offer email instead.
+      showProblems(["We couldn't send the form just now."], mailtoFor(body));
+    } else {
+      showProblems([err.message]);
+    }
   } finally {
     $("go").disabled = false; $("go").textContent = "Register interest";
   }
 });
 
-function showProblems(list) {
+function mailtoFor(b) {
+  const lines = [
+    "Name: " + [b.first_name, b.last_name].filter(Boolean).join(" "), "Email: " + b.email, "Mobile: " + (b.mobile || "-"),
+    "Postcode: " + b.postcode + (b.suburb ? " (" + b.suburb + ")" : ""), "Network: " + b.network, "Power supply: " + b.phase,
+    "Retailer: " + b.retailer, "Battery: " + (b.battery === "Another battery" ? (b.other_battery || "Another battery") : b.battery_count + " x " + b.battery),
+    "Solar: " + (b.solar_kw ? b.solar_kw + " kW" : "-"), "Heard about wattle from: " + (b.heard_from || "-"),
+  ];
+  return "mailto:wattle@nurthen.au?subject=" + encodeURIComponent("Register interest: " + b.first_name) +
+    "&body=" + encodeURIComponent("Hi Lloyd,\n\nI'd like to register my interest in wattle.\n\n" + lines.join("\n") + "\n");
+}
+
+function showProblems(list, mailto) {
   const box = $("problems");
   box.replaceChildren(...list.map((t) => Object.assign(document.createElement("div"), { textContent: t })));
+  if (mailto) {
+    const a = Object.assign(document.createElement("a"), { href: mailto, textContent: "Email your details to wattle@nurthen.au instead" });
+    a.style.cssText = "display:inline-block;margin-top:8px;font-weight:700;color:#8A3B12";
+    box.append(a);
+  }
   box.hidden = false; box.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 </script>
