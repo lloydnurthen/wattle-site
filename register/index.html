@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register your interest · wattle</title>
+<meta name="description" content="Register your interest in wattle. Friends and family only for now.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Ccircle cx='7' cy='8' r='3.2' fill='%23FFC940'/%3E%3Ccircle cx='14' cy='6' r='2.6' fill='%23FFC940'/%3E%3Ccircle cx='15' cy='13' r='3' fill='%23FFC940'/%3E%3Cpath d='M3 20C8 18 11 14 12 9' fill='none' stroke='%230F6E56' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F3F6F4; color: #12201B; font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  a { color: #0F6E56; }
+  input, select, button, textarea { font: inherit; color: inherit; }
+  input:focus, select:focus, button:focus-visible { outline: 3px solid #9FD3BF; outline-offset: 1px; }
+  nav { background: #fff; border-bottom: 1px solid #E8EEEB; }
+  .bar { max-width: 1120px; margin: 0 auto; padding: 0 24px; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 6px; text-decoration: none; color: #12201B; font-size: 21px; font-weight: 800; letter-spacing: -0.6px; }
+  .bar > a:last-child { font-size: 14px; color: #3E4D47; text-decoration: none; padding: 12px 0; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 24px 80px; display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+  aside { flex: 1 1 320px; background: #0F6E56; color: #fff; border-radius: 28px; padding: 36px 32px; }
+  aside h1 { margin: 18px 0 0; font-size: clamp(32px, 4vw, 44px); line-height: 1.05; font-weight: 800; letter-spacing: -0.04em; }
+  aside p { margin: 14px 0 0; font-size: 17px; line-height: 1.5; color: #CFE6DC; }
+  .points { display: flex; flex-direction: column; gap: 14px; margin-top: 28px; }
+  .point { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; line-height: 1.45; }
+  .num { width: 26px; height: 26px; border-radius: 13px; background: #FFC940; color: #12201B; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex: 0 0 auto; }
+  main { flex: 999 1 560px; min-width: 0; background: #fff; border-radius: 28px; padding: 36px clamp(20px, 4vw, 40px); }
+  form { display: flex; flex-direction: column; gap: 34px; }
+  fieldset { border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  legend { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; padding: 0; margin-bottom: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+  .f { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .row > .f { flex: 1 1 200px; }
+  .row > .f.short { flex: 0 1 160px; }
+  label, .label { font-size: 14px; font-weight: 700; }
+  .opt { font-weight: 500; color: #5B6B64; }
+  .f input, .f select { height: 48px; border-radius: 12px; border: 1px solid #C9D6D0; padding: 0 14px; font-size: 16px; background: #fff; width: 100%; }
+  #postcode { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+  .hint { font-size: 13px; line-height: 1.5; color: #5B6B64; }
+  .found { display: flex; gap: 14px; align-items: center; background: #E3F2EC; border-radius: 16px; padding: 14px 16px; }
+  .found .icon { width: 40px; height: 40px; border-radius: 20px; background: #0F6E56; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .found small { display: block; font-size: 13px; color: #0A5543; font-weight: 600; }
+  .found strong { display: block; font-size: 18px; font-weight: 800; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; border: none; padding: 0; margin: 0; }
+  .pills label { position: relative; }
+  .pills input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .pills span { display: inline-flex; align-items: center; height: 44px; padding: 0 18px; border-radius: 22px; border: 1px solid #C9D6D0; background: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .pills input:checked + span { border: 2px solid #0F6E56; background: #E3F2EC; color: #0A5543; font-weight: 800; padding: 0 17px; }
+  .pills input:focus-visible + span { outline: 3px solid #9FD3BF; outline-offset: 1px; }
+  .stepper { display: flex; align-items: center; border: 1px solid #C9D6D0; border-radius: 24px; overflow: hidden; }
+  .stepper button { width: 48px; height: 46px; border: none; background: #fff; font-size: 22px; color: #0F6E56; cursor: pointer; }
+  .stepper output { min-width: 36px; text-align: center; font-size: 17px; font-weight: 800; }
+  .unit { display: flex; align-items: center; border: 1px solid #C9D6D0; border-radius: 12px; overflow: hidden; height: 48px; background: #fff; }
+  .unit input { border: none; height: 46px; flex: 1 1 auto; min-width: 0; padding: 0 14px; font-size: 16px; }
+  .unit span { padding: 0 14px; font-size: 15px; font-weight: 600; color: #5B6B64; }
+  .note { display: flex; gap: 12px; align-items: flex-start; background: #FFF6DC; border-radius: 14px; padding: 14px 16px; font-size: 14px; line-height: 1.5; color: #4A3500; }
+  .end { display: flex; flex-direction: column; gap: 16px; border-top: 1px solid #E1E8E4; padding-top: 24px; }
+  .consent { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 1.5; cursor: pointer; }
+  .consent input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: #0F6E56; flex: 0 0 auto; }
+  .go { height: 54px; border-radius: 27px; border: none; background: #0F6E56; color: #fff; font-size: 17px; font-weight: 800; cursor: pointer; }
+  .go:disabled { background: #DCE4E0; color: #5B6B64; cursor: default; }
+  .problems { background: #FCE9DC; color: #8A3B12; border-radius: 12px; padding: 12px 14px; font-size: 15px; line-height: 1.5; }
+  .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .thanks { display: flex; flex-direction: column; gap: 18px; padding: 12px 0; }
+  .thanks h2 { margin: 0; font-size: 34px; line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
+  .thanks ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .thanks li { display: flex; gap: 14px; font-size: 16px; line-height: 1.5; }
+  .thanks li .num { background: #E3F2EC; color: #0A5543; width: 28px; height: 28px; border-radius: 14px; font-size: 14px; }
+  footer { border-top: 1px solid #E1E8E4; padding: 24px; }
+  footer div { max-width: 1120px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; font-size: 13px; line-height: 1.6; color: #5B6B64; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<nav aria-label="Main"><div class="bar">
+  <a class="brand" href="/"><svg aria-hidden="true" width="28" height="28" viewBox="0 0 22 22"><circle cx="7" cy="8" r="3.2" fill="#FFC940"/><circle cx="14" cy="6" r="2.6" fill="#FFC940"/><circle cx="15" cy="13" r="3" fill="#FFC940"/><path d="M3 20C8 18 11 14 12 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round"/></svg>wattle</a>
+  <a href="/">Back to home</a>
+</div></nav>
+
+<div class="wrap">
+  <aside>
+    <svg aria-hidden="true" width="56" height="56" viewBox="0 0 22 22"><circle cx="7" cy="8" r="3.2" fill="#FFC940"/><circle cx="14" cy="6" r="2.6" fill="#FFC940"/><circle cx="15" cy="13" r="3" fill="#FFC940"/><path d="M3 20C8 18 11 14 12 9" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <h1>Register your interest</h1>
+    <p>wattle is open to friends and family for now. Tell us about your home and Lloyd will be in touch about whether it suits.</p>
+    <div class="points">
+      <div class="point"><span class="num">1</span>About two minutes</div>
+      <div class="point"><span class="num">2</span>No passwords here. You connect Tesla and Amber later, on their own sites.</div>
+      <div class="point"><span class="num">3</span>Not sure of an answer? Leave it. We'll work it out with you.</div>
+    </div>
+  </aside>
+
+  <main>
+    <section class="thanks" id="thanks" hidden aria-live="polite">
+      <div class="found" style="width:64px;height:64px;border-radius:32px;background:#0F6E56;justify-content:center;padding:0"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 22 22" fill="none" stroke="#FFC940" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11.5l4 4L17 7"/></svg></div>
+      <h2 id="thanks-title">Thanks. We've got your details.</h2>
+      <p style="margin:0;font-size:17px;line-height:1.5;color:#3E4D47" id="thanks-sub">We've emailed you a copy from wattle@nurthen.au. Here's what happens next.</p>
+      <ol>
+        <li><span class="num">1</span><span><strong>Lloyd looks over your details.</strong> He'll reply by email if anything's unclear.</span></li>
+        <li><span class="num">2</span><span><strong>If wattle suits your home, you get an invite.</strong> It has a link to connect Tesla and Amber and choose your Powerwall.</span></li>
+        <li><span class="num">3</span><span><strong>wattle watches first.</strong> A few days of plans and a report before you switch it on.</span></li>
+      </ol>
+      <p class="hint">Can't see the email? Check your junk folder, and add wattle@nurthen.au to your contacts.</p>
+    </section>
+
+    <form id="form" novalidate>
+      <div class="problems" id="problems" role="alert" hidden></div>
+
+      <fieldset>
+        <legend>About you</legend>
+        <div class="row">
+          <div class="f"><label for="first_name">First name</label><input id="first_name" name="first_name" autocomplete="given-name" required maxlength="60"></div>
+          <div class="f"><label for="last_name">Last name</label><input id="last_name" name="last_name" autocomplete="family-name" maxlength="60"></div>
+        </div>
+        <div class="row">
+          <div class="f" style="flex-basis:260px"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254"></div>
+          <div class="f"><label for="mobile">Mobile <span class="opt">(optional)</span></label><input id="mobile" name="mobile" type="tel" autocomplete="tel" maxlength="30"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your home</legend>
+        <div class="row">
+          <div class="f short"><label for="postcode">Postcode</label><input id="postcode" name="postcode" inputmode="numeric" maxlength="4" autocomplete="postal-code" placeholder="2000" required></div>
+          <div class="f"><label for="suburb">Suburb <span class="opt">(optional)</span></label><input id="suburb" name="suburb" autocomplete="address-level2" maxlength="60"></div>
+        </div>
+        <div class="found" id="one-network" hidden>
+          <div class="icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#FFC940" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L4 11h5l-1 7 7-9h-5z"/></svg></div>
+          <div><small>Your electricity network</small><strong id="one-network-name"></strong></div>
+        </div>
+        <div class="f" id="pick-network" hidden>
+          <label for="network">Which network is on your power bill?</label>
+          <select id="network" name="network"></select>
+        </div>
+        <p class="hint" id="network-hint">Your network owns the poles and wires. It's printed on your power bill. Not sure? Leave it, and we'll find it when you connect.</p>
+
+        <div class="f">
+          <span class="label" id="phase-label">Power supply</span>
+          <div class="pills" role="radiogroup" aria-labelledby="phase-label">
+            <label><input type="radio" name="phase" value="Single phase"><span>Single phase</span></label>
+            <label><input type="radio" name="phase" value="Three phase"><span>Three phase</span></label>
+            <label><input type="radio" name="phase" value="Not sure" checked><span>Not sure</span></label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your energy</legend>
+        <div class="f">
+          <label for="retailer">Who do you buy power from?</label>
+          <select id="retailer" name="retailer">
+            <option>Amber Electric</option><option>AGL</option><option>Origin</option><option>EnergyAustralia</option>
+            <option>Red Energy</option><option>Alinta Energy</option><option>Powershop</option><option>Globird</option><option>Another retailer</option>
+          </select>
+        </div>
+        <div class="note" id="not-amber" hidden>wattle needs Amber's live prices to work. Register anyway: we'll look at your usage and tell you honestly whether switching is worth it.</div>
+
+        <div class="f">
+          <span class="label" id="battery-label">Battery</span>
+          <div class="pills" role="radiogroup" aria-labelledby="battery-label">
+            <label><input type="radio" name="battery" value="Powerwall 3" checked><span>Powerwall 3</span></label>
+            <label><input type="radio" name="battery" value="Powerwall 2"><span>Powerwall 2</span></label>
+            <label><input type="radio" name="battery" value="Another battery"><span>Another battery</span></label>
+          </div>
+        </div>
+        <div class="row" id="how-many" style="align-items:center">
+          <span class="label" id="count-label">How many?</span>
+          <div class="stepper" role="group" aria-labelledby="count-label">
+            <button type="button" id="less" aria-label="One fewer">−</button><output id="count" aria-live="polite">1</output><button type="button" id="more" aria-label="One more">+</button>
+          </div>
+          <span class="hint">Count an Expansion unit as one more</span>
+        </div>
+        <div class="f" id="other-battery-box" hidden>
+          <label for="other_battery">Which battery?</label>
+          <input id="other_battery" name="other_battery" placeholder="Brand and model" maxlength="80">
+          <span class="hint">wattle only runs Powerwalls today. We'll tell you when yours is supported.</span>
+        </div>
+
+        <div class="row">
+          <div class="f">
+            <label for="solar_kw">Solar size <span class="opt">(optional)</span></label>
+            <div class="unit"><input id="solar_kw" name="solar_kw" inputmode="decimal" placeholder="10.2" maxlength="6"><span>kW</span></div>
+          </div>
+          <div class="f">
+            <label for="heard_from">Who told you about wattle? <span class="opt">(optional)</span></label>
+            <input id="heard_from" name="heard_from" maxlength="80">
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="trap" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+
+      <div class="end">
+        <label class="consent"><input type="checkbox" id="consent" name="consent"><span>wattle can email me about my interest, and I've read the <a href="/privacy/">Privacy Policy</a>.</span></label>
+        <button class="go" type="submit" id="go">Register interest</button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<footer><div>
+  <span>© 2026 Lloyd Nurthen. All rights reserved. wattle isn't affiliated with Tesla or Amber Electric.</span>
+  <span><a href="/privacy/">Privacy</a></span>
+</div></footer>
+
+<script type="module">
+import { networksFor, stateFor } from "./networks.js";
+const ENDPOINT = "https://wattle-api.nurthen.au/api/interest";
+const $ = (id) => document.getElementById(id);
+const form = $("form");
+let count = 1;
+
+function showNetworks() {
+  const pc = $("postcode").value.replace(/\D/g, "").slice(0, 4);
+  if (pc !== $("postcode").value) $("postcode").value = pc;
+  const list = pc.length === 4 ? networksFor(pc) : [];
+  $("one-network").hidden = list.length !== 1;
+  $("pick-network").hidden = list.length < 2;
+  if (list.length === 1) $("one-network-name").textContent = list[0] + " (" + stateFor(pc) + ")";
+  if (list.length > 1) {
+    const before = $("network").value;
+    $("network").replaceChildren(...["Not sure", ...list].map((n) => new Option(n === "Not sure" ? "Not sure" : n, n)));
+    if (list.includes(before)) $("network").value = before;
+  }
+}
+$("postcode").addEventListener("input", showNetworks);
+$("retailer").addEventListener("change", () => { $("not-amber").hidden = $("retailer").value === "Amber Electric"; });
+form.addEventListener("change", (e) => {
+  if (e.target.name !== "battery") return;
+  const other = e.target.value === "Another battery";
+  $("how-many").hidden = other; $("other-battery-box").hidden = !other;
+});
+$("less").onclick = () => { count = Math.max(1, count - 1); $("count").textContent = count; };
+$("more").onclick = () => { count = Math.min(4, count + 1); $("count").textContent = count; };
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const v = (n) => (form.elements[n] ? form.elements[n].value : "");
+  const pc = v("postcode");
+  const list = networksFor(pc);
+  const body = {
+    first_name: v("first_name"), last_name: v("last_name"), email: v("email"), mobile: v("mobile"),
+    postcode: pc, suburb: v("suburb"),
+    network: list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : v("network")),
+    phase: v("phase"), retailer: v("retailer"), battery: v("battery"), battery_count: count,
+    other_battery: v("other_battery"), solar_kw: v("solar_kw"), heard_from: v("heard_from"),
+    website: v("website"), consent: $("consent").checked,
+  };
+  const problems = [];
+  if (!body.first_name.trim()) problems.push("Please add your first name.");
+  if (!/^\S+@\S+\.\S+$/.test(body.email.trim())) problems.push("Please check your email address.");
+  if (!/^\d{4}$/.test(pc)) problems.push("Please add your four-digit postcode.");
+  if (!body.consent) problems.push("Please tick the box so we can email you.");
+  if (problems.length) return showProblems(problems);
+  $("go").disabled = true; $("go").textContent = "Sending…";
+  try {
+    const res = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || !out.ok) throw new Error((out.problems || ["Something went wrong. Please try again in a minute."]).join(" "));
+    $("thanks-title").textContent = "Thanks, " + body.first_name.trim() + ". We've got your details.";
+    $("thanks-sub").textContent = "We've emailed a copy to " + body.email.trim() + " from wattle@nurthen.au. Here's what happens next.";
+    form.hidden = true; $("thanks").hidden = false; window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    showProblems([err.message === "Failed to fetch" ? "We couldn't reach wattle. Check your connection and try again." : err.message]);
+  } finally {
+    $("go").disabled = false; $("go").textContent = "Register interest";
+  }
+});
+
+function showProblems(list) {
+  const box = $("problems");
+  box.replaceChildren(...list.map((t) => Object.assign(document.createElement("div"), { textContent: t })));
+  box.hidden = false; box.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+</script>
+</body>
+</html>
