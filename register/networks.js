@@ -1,9 +1,12 @@
-// Postcode → state, and the electricity networks in each state.
+// Countries, electricity networks and retailers for the register-interest form.
 //
-// There's no free national postcode → network table we can use, so the form narrows
-// the choice to the state's networks and fills it in when the state has only one.
-// Amber's site data gives the exact network once someone connects (#23).
-// Copied from lloydnurthen/wattle interest/src/networks.js; keep them in step.
+// Australia: there's no free national postcode → network table, so the postcode gives the
+// state, and the form lists that state's networks (filling it in when there's only one).
+// New Zealand: the form lists every lines company. Amber's site data gives the exact network
+// for Australians once they connect; for New Zealand we ask (#23, #26).
+// The same file is copied to wattle-site/register/networks.js; keep them in step.
+
+export const COUNTRIES = { AU: "Australia", NZ: "New Zealand" };
 
 export const NETWORKS = {
   NSW: ["Ausgrid", "Endeavour Energy", "Essential Energy"],
@@ -14,6 +17,21 @@ export const NETWORKS = {
   WA: ["Western Power", "Horizon Power"],
   TAS: ["TasNetworks"],
   NT: ["Power and Water"],
+};
+
+// New Zealand's electricity distribution businesses (lines companies), A to Z.
+export const NZ_NETWORKS = ["Alpine Energy", "Aurora Energy", "Buller Electricity", "Centralines",
+  "Counties Energy", "EA Networks", "Eastland Network", "Electra", "Firstlight Network",
+  "Horizon Networks", "MainPower", "Marlborough Lines", "Nelson Electricity", "Network Tasman",
+  "Network Waitaki", "Northpower", "Orion", "OtagoNet", "PowerNet", "Powerco", "Scanpower",
+  "The Lines Company", "Top Energy", "Unison", "Vector", "Waipa Networks", "WEL Networks",
+  "Wellington Electricity", "Westpower"];
+
+export const RETAILERS = {
+  AU: ["Amber Electric", "AGL", "Origin", "EnergyAustralia", "Red Energy", "Alinta Energy", "Powershop",
+    "Globird", "Another retailer"],
+  NZ: ["Contact Energy", "Mercury", "Genesis Energy", "Meridian", "Electric Kiwi", "Flick Electric",
+    "Octopus Energy", "Powershop", "Nova Energy", "Frank Energy", "Pulse Energy", "Another retailer"],
 };
 
 const RANGES = [
@@ -28,15 +46,19 @@ const RANGES = [
   [7000, 7999, "TAS"],
 ];
 
-export function stateFor(postcode) {
+/** The Australian state for a postcode, or "" (New Zealand postcodes return "NZ"). */
+export function stateFor(postcode, country = "AU") {
   if (!/^\d{4}$/.test(String(postcode || ""))) return "";
+  if (country === "NZ") return "NZ";
   const n = Number(postcode);
   const hit = RANGES.find(([a, b]) => n >= a && n <= b);
   return hit ? hit[2] : "";
 }
 
-export function networksFor(postcode) {
+/** The networks to offer for a postcode. */
+export function networksFor(postcode, country = "AU") {
+  if (country === "NZ") return /^\d{4}$/.test(String(postcode || "")) ? NZ_NETWORKS : [];
   return NETWORKS[stateFor(postcode)] || [];
 }
 
-export const ALL_NETWORKS = [...new Set(Object.values(NETWORKS).flat())];
+export const ALL_NETWORKS = [...new Set([...Object.values(NETWORKS).flat(), ...NZ_NETWORKS])];
