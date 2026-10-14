@@ -140,14 +140,16 @@
         <div class="f">
           <span class="label" id="country-label">Country</span>
           <div class="pills" role="radiogroup" aria-labelledby="country-label">
-            <label><input type="radio" name="country" value="AU" checked><span>Australia</span></label>
+            <label><input type="radio" name="country" value="AU"><span>Australia</span></label>
             <label><input type="radio" name="country" value="NZ"><span>New Zealand</span></label>
           </div>
         </div>
+        <div id="home-rest" hidden style="display:flex;flex-direction:column;gap:14px">
         <div class="row">
           <div class="f short"><label for="postcode">Postcode</label><input id="postcode" name="postcode" inputmode="numeric" maxlength="4" autocomplete="postal-code" placeholder="2000" required></div>
-          <div class="f"><label for="suburb">Suburb <span class="opt">(optional)</span></label><input id="suburb" name="suburb" autocomplete="address-level2" maxlength="60"></div>
+          <div class="f"><label for="suburb-pick">Suburb</label><select id="suburb-pick" disabled><option value="">Enter your postcode first</option></select></div>
         </div>
+        <div class="f" id="suburb-own" hidden><label for="suburb">Your suburb</label><input id="suburb" name="suburb" autocomplete="address-level2" maxlength="60"></div>
         <div class="found" id="one-network" hidden>
           <div class="icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#FFC940" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L4 11h5l-1 7 7-9h-5z"/></svg></div>
           <div><small>Your electricity network</small><strong id="one-network-name"></strong></div>
@@ -157,13 +159,14 @@
           <select id="network" name="network"></select>
         </div>
         <p class="hint" id="network-hint"></p>
+        </div>
 
         <div class="f">
           <span class="label" id="phase-label">Power supply</span>
           <div class="pills" role="radiogroup" aria-labelledby="phase-label">
             <label><input type="radio" name="phase" value="Single phase"><span>Single phase</span></label>
             <label><input type="radio" name="phase" value="Three phase"><span>Three phase</span></label>
-            <label><input type="radio" name="phase" value="Not sure" checked><span>Not sure</span></label>
+            <label><input type="radio" name="phase" value="Not sure"><span>Not sure</span></label>
           </div>
         </div>
       </fieldset>
@@ -179,12 +182,12 @@
         <div class="f">
           <span class="label" id="battery-label">Battery</span>
           <div class="pills" role="radiogroup" aria-labelledby="battery-label">
-            <label><input type="radio" name="battery" value="Powerwall 3" checked><span>Powerwall 3</span></label>
+            <label><input type="radio" name="battery" value="Powerwall 3"><span>Powerwall 3</span></label>
             <label><input type="radio" name="battery" value="Powerwall 2"><span>Powerwall 2</span></label>
             <label><input type="radio" name="battery" value="Another battery"><span>Another battery</span></label>
           </div>
         </div>
-        <div class="row" id="how-many" style="align-items:center">
+        <div class="row" id="how-many" style="align-items:center" hidden>
           <span class="label" id="count-label">How many?</span>
           <div class="stepper" role="group" aria-labelledby="count-label">
             <button type="button" id="less" aria-label="One fewer">−</button><output id="count" aria-live="polite">1</output><button type="button" id="more" aria-label="One more">+</button>
@@ -249,7 +252,7 @@
 
 <footer><div>
   <span>© 2026 Lloyd Nurthen. All rights reserved. wattle isn't affiliated with Tesla or Amber Electric.</span>
-  <span><a href="/privacy/">Privacy</a></span>
+  <span><a href="/privacy/">Privacy</a> · Suburb names from <a href="https://www.geonames.org/">GeoNames</a> (CC BY 4.0)</span>
 </div></footer>
 
 <script type="module">
@@ -260,26 +263,30 @@ const form = $("form");
 let count = 1;
 
 const HINTS = {
-  AU: "Your network owns the poles and wires. It's printed on your power bill. Not sure? Leave it, and we'll find it when you connect.",
-  NZ: "Your lines company owns the poles and wires. It's usually on your power bill. Not sure? Leave it as Not sure.",
+  AU: "Your network owns the poles and wires. It's printed on your power bill. Not sure? Choose Not sure, and we'll find it when you connect.",
+  NZ: "Your lines company owns the poles and wires. It's usually on your power bill. Not sure? Choose Not sure.",
 };
-const country = () => (form.elements.country ? form.elements.country.value : "AU");
+const country = () => (form.elements.country ? form.elements.country.value : "");
 
+const choose = (text) => Object.assign(new Option(text, ""), { disabled: true, selected: true });
 function showCountry() {
   const c = country();
+  $("home-rest").hidden = !c;
   const before = $("retailer").value;
-  $("retailer").replaceChildren(...RETAILERS[c].map((r) => new Option(r, r)));
+  if (!c) { $("retailer").replaceChildren(choose("Choose your country first")); showRetailer(); return; }
+  $("retailer").replaceChildren(choose("Choose your retailer"), ...RETAILERS[c].map((r) => new Option(r, r)));
   if (RETAILERS[c].includes(before)) $("retailer").value = before;
   $("postcode").placeholder = c === "NZ" ? "6011" : "2000";
   $("network-hint").textContent = HINTS[c];
   $("pick-network").querySelector("label").textContent = c === "NZ" ? "Which lines company is on your power bill?" : "Which network is on your power bill?";
   showRetailer();
   showNetworks();
+  showSuburbs();
 }
 function showRetailer() {
-  const nz = country() === "NZ", amber = !nz && $("retailer").value === "Amber Electric";
-  $("not-amber").hidden = nz || amber;
-  $("plan-box").hidden = amber;
+  const r = $("retailer").value, nz = country() === "NZ", amber = !nz && r === "Amber Electric";
+  $("not-amber").hidden = nz || amber || !r;
+  $("plan-box").hidden = amber || !r;
   $("plan-why").textContent = nz
     ? "In New Zealand, wattle works from your plan's rates. Type them in from your bill or your retailer's app, or just add a photo of your bill. You can also skip this and do it when you connect."
     : "Not on Amber? Your rates help us tell you honestly whether switching would pay. Type them in or add a photo of your bill.";
@@ -296,16 +303,16 @@ function addRate(r = {}) {
     <div class="f name"><label for="${id("label")}">Name</label><input id="${id("label")}" data-k="label" maxlength="40" placeholder="e.g. Peak, Night, Free hours"></div>
     <button type="button" class="x" aria-label="Remove this rate">×</button>
     <div class="f"><label for="${id("cents")}">Price (c/kWh)</label><input id="${id("cents")}" data-k="cents" inputmode="decimal" maxlength="6" placeholder="34.5"></div>
-    <div class="f days"><label for="${id("days")}">Days</label><select id="${id("days")}" data-k="days">${DAYS.map((d) => `<option>${d}</option>`).join("")}</select></div>
-    <div class="f"><label for="${id("from")}">From</label><input type="time" id="${id("from")}" data-k="from" value="07:00" step="1800"></div>
-    <div class="f to"><label for="${id("to")}">To</label><input type="time" id="${id("to")}" data-k="to" value="21:00" step="1800"></div>`;
+    <div class="f days"><label for="${id("days")}">Days</label><select id="${id("days")}" data-k="days"><option value="" disabled selected>Choose</option>${DAYS.map((d) => `<option>${d}</option>`).join("")}</select></div>
+    <div class="f"><label for="${id("from")}">From</label><input type="time" id="${id("from")}" data-k="from" step="1800"></div>
+    <div class="f to"><label for="${id("to")}">To</label><input type="time" id="${id("to")}" data-k="to" step="1800"></div>`;
   for (const [k, v] of Object.entries(r)) { const input = box.querySelector(`[data-k="${k}"]`); if (input) input.value = v; }
   box.querySelector(".x").onclick = () => { box.remove(); $("add-rate").hidden = false; };
   $("rates").append(box);
   $("add-rate").hidden = $("rates").children.length >= 8;
 }
 $("add-rate").onclick = () => addRate();
-addRate({ label: "", from: "07:00", to: "21:00" });
+addRate();
 
 function planFromForm() {
   const rates = [...$("rates").children].map((box) => Object.fromEntries([...box.querySelectorAll("[data-k]")].map((i) => [i.dataset.k, i.value.trim()])))
@@ -363,17 +370,46 @@ function showNetworks() {
   if (list.length === 1) $("one-network-name").textContent = list[0] + " (" + stateFor(pc) + ")";
   if (list.length > 1) {
     const before = $("network").value;
-    $("network").replaceChildren(...["Not sure", ...list].map((n) => new Option(n === "Not sure" ? "Not sure" : n, n)));
+    $("network").replaceChildren(choose(country() === "NZ" ? "Choose your lines company" : "Choose your network"), ...[...list, "Not sure"].map((n) => new Option(n, n)));
     if (list.includes(before)) $("network").value = before;
   }
 }
-$("postcode").addEventListener("input", showNetworks);
+$("postcode").addEventListener("input", () => { showNetworks(); showSuburbs(); });
+
+// Suburbs for the postcode (GeoNames, CC BY 4.0; built by tools/build-places.py).
+const placeFiles = {};
+const OTHER = "__other";
+async function placesFor(c, pc) {
+  const file = c === "NZ" ? "nz" : "au-" + pc[0];
+  if (!placeFiles[file]) placeFiles[file] = fetch("./places/" + file + ".json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+  return (await placeFiles[file])[pc] || [];
+}
+let suburbFor = "";
+async function showSuburbs() {
+  const c = country(), pc = $("postcode").value, pick = $("suburb-pick");
+  const key = c + pc;
+  if (key === suburbFor) return;
+  suburbFor = key;
+  if (!c || pc.length !== 4) {
+    pick.disabled = true; pick.replaceChildren(choose("Enter your postcode first")); $("suburb-own").hidden = true; return;
+  }
+  const before = pick.value;
+  const list = await placesFor(c, pc);
+  if (suburbFor !== key) return; // they kept typing
+  pick.disabled = false;
+  pick.replaceChildren(choose(list.length ? "Choose your suburb" : "We couldn't find that postcode"),
+    ...list.map((n) => new Option(n, n)), new Option(list.length ? "My suburb isn't listed" : "Type my suburb", OTHER));
+  if (list.length === 1) pick.value = list[0];
+  else if (list.includes(before)) pick.value = before;
+  else if (!list.length) pick.value = OTHER;
+  $("suburb-own").hidden = pick.value !== OTHER;
+}
+$("suburb-pick").addEventListener("change", () => {
+  $("suburb-own").hidden = $("suburb-pick").value !== OTHER;
+  if ($("suburb-pick").value === OTHER) $("suburb").focus();
+});
 $("retailer").addEventListener("change", showRetailer);
 form.addEventListener("change", (e) => { if (e.target.name === "country") showCountry(); });
-// Someone in New Zealand probably wants New Zealand.
-try {
-  if (/^Pacific\/(Auckland|Chatham)$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) form.elements.country.value = "NZ";
-} catch (e) { /* leave Australia */ }
 showCountry();
 form.addEventListener("change", (e) => {
   if (e.target.name !== "battery") return;
@@ -390,8 +426,8 @@ form.addEventListener("submit", async (e) => {
   const list = networksFor(pc, country());
   const body = {
     country: country(), first_name: v("first_name"), last_name: v("last_name"), email: v("email"), mobile: v("mobile"),
-    postcode: pc, suburb: v("suburb"),
-    network: list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : v("network")),
+    postcode: pc, suburb: $("suburb-pick").value === OTHER ? v("suburb").trim() : $("suburb-pick").value,
+    network: list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : $("network").value),
     phase: v("phase"), retailer: v("retailer"), battery: v("battery"), battery_count: count,
     other_battery: v("other_battery"), solar_kw: v("solar_kw"), heard_from: v("heard_from"),
     website: v("website"), consent: $("consent").checked,
@@ -401,7 +437,19 @@ form.addEventListener("submit", async (e) => {
   const problems = [];
   if (!body.first_name.trim()) problems.push("Please add your first name.");
   if (!/^\S+@\S+\.\S+$/.test(body.email.trim())) problems.push("Please check your email address.");
-  if (!/^\d{4}$/.test(pc)) problems.push("Please add your four-digit postcode.");
+  if (!body.country) problems.push("Please choose your country.");
+  else if (!/^\d{4}$/.test(pc)) problems.push("Please add your four-digit postcode.");
+  else {
+    if (!body.suburb) problems.push("Please choose your suburb.");
+    if (!body.network) problems.push(country() === "NZ" ? "Please choose your lines company, or Not sure." : "Please choose your network, or Not sure.");
+  }
+  if (!body.phase) problems.push("Please choose your power supply, or Not sure.");
+  if (!body.retailer) problems.push("Please choose who you buy power from.");
+  if (!body.battery) problems.push("Please choose your battery.");
+  else if (body.battery === "Another battery" && !body.other_battery.trim()) problems.push("Please tell us which battery you have.");
+  (body.plan ? body.plan.rates : []).forEach((r, i) => {
+    if (!r.days || !r.from || !r.to) problems.push("Rate " + (i + 1) + (r.label ? " (" + r.label + ")" : "") + ": please choose the days and times.");
+  });
   if (!body.consent) problems.push("Please tick the box so we can email you.");
   if (problems.length) return showProblems(problems);
   $("go").disabled = true; $("go").textContent = "Sending…";
