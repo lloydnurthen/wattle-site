@@ -1,0 +1,14 @@
+Copyright (c) 2026 Lloyd Nurthen. All rights reserved.
+
+This repository holds the website for wattle (wattle.nurthen.au). It is published so the
+site can be served; that does not give anyone permission to use it. No part of it may be
+copied, modified, distributed or used to make other works without written permission from
+Lloyd Nurthen. Using the website is covered by its terms of use (https://wattle.nurthen.au/terms/).
+
+Exceptions (third-party data, under their own licences):
+- register/places/au-*.json: suburb names from GeoNames (https://www.geonames.org/),
+  Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/),
+  converted by https://github.com/zauberware/postal-codes-json-xml-csv.
+- register/places/nz.json and nz-lines.json: built from Open NZ Postcodes
+  (https://github.com/s01ipsist/open_nz_postcodes), CC0 1.0, and GeoNames as above.
+  The lines company for each postcode is wattle's own work.
