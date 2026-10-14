@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Build register/places/*.json: postcode -> suburbs, for the register form's suburb list.
 
-Source: GeoNames postal codes (https://www.geonames.org/, CC BY 4.0), as converted by
-https://github.com/zauberware/postal-codes-json-xml-csv (data/AU.zip, data/NZ.zip).
-Usage: python3 tools/build-places.py zipcodes.au.csv zipcodes.nz.csv
+Sources:
+- Australia: GeoNames postal codes (https://www.geonames.org/, CC BY 4.0), as converted by
+  https://github.com/zauberware/postal-codes-json-xml-csv (data/AU.zip).
+- New Zealand: GeoNames gives only one place per postcode, so suburbs come from Open NZ
+  Postcodes' street_postcodes (https://github.com/s01ipsist/open_nz_postcodes, CC0): every
+  road with its postcode and LINZ suburb. A suburb is listed for a postcode when at least two
+  of its roads have that postcode (one stray road isn't enough). GeoNames fills in postcodes
+  with no roads (PO boxes, rural).
+Usage: python3 tools/build-places.py zipcodes.au.csv zipcodes.nz.csv path/to/open_nz_postcodes/street_postcodes
 Australia is split by the postcode's first digit (au-0.json ... au-9.json); New Zealand is one file.
 The credit line is on the register page (CC BY 4.0 needs it).
 """
@@ -25,9 +31,32 @@ def load(path):
 def write(name, data):
     (OUT / name).write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
+def load_nz_streets(folder):
+    counts = defaultdict(lambda: defaultdict(int))
+    for path in sorted(Path(folder).glob("*.csv")):
+        with open(path, newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                code = (row.get("postcode") or "").strip().zfill(4)
+                if len(code) != 4 or not code.isdigit() or code == "0000":
+                    continue
+                for place in (row.get("locality") or "").split(","):
+                    if place.strip():
+                        counts[code][place.strip()] += 1
+    out = {}
+    for code, places in counts.items():
+        keep = [p for p, n in places.items() if n >= 2] or [max(places, key=places.get)]
+        out[code] = set(keep)
+    return out
+
 OUT.mkdir(parents=True, exist_ok=True)
 au, nz = load(sys.argv[1]), load(sys.argv[2])
+if len(sys.argv) > 3:
+    streets = load_nz_streets(sys.argv[3])
+    for code, places in streets.items():
+        nz[code] = sorted(places | set(nz.get(code, [])) if len(places) < 3 else places)
+    nz = dict(sorted(nz.items()))
 for d in "0123456789":
     write(f"au-{d}.json", {k: v for k, v in au.items() if k[0] == d})
 write("nz.json", nz)
-print(f"Australia: {len(au)} postcodes, {sum(map(len, au.values()))} suburbs; New Zealand: {len(nz)} postcodes")
+print(f"Australia: {len(au)} postcodes, {sum(map(len, au.values()))} suburbs; "
+      f"New Zealand: {len(nz)} postcodes, {sum(map(len, nz.values()))} suburbs")
