@@ -18,29 +18,31 @@
   summary { cursor: pointer; list-style: none; }
   summary::-webkit-details-marker { display: none; }
   html { scroll-behavior: smooth; }
+  /* Phones: logo and the button on one line; the section links are on the page anyway. */
+  @media (max-width: 640px) { .navlink { display: none; } }
 </style>
 </head>
 <body>
 <div style="width: 100%; background: #FFFFFF; color: #12201B; font-family: 'Plus Jakarta Sans', system-ui, sans-serif">
 
   <nav aria-label="Main" style="background: rgba(255,255,255,0.92); border-bottom: 1px solid #E8EEEB">
-    <div style="max-width: 1120px; margin: 0 auto; padding: 0 24px; min-height: 56px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 24px; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 8px 24px">
       <a href="#top" style="display: flex; align-items: center; gap: 6px; text-decoration: none; color: #12201B">
         <svg aria-hidden="true" width="28" height="28" viewBox="0 0 22 22"><circle cx="7" cy="8" r="3.2" fill="#FFC940"/><circle cx="14" cy="6" r="2.6" fill="#FFC940"/><circle cx="15" cy="13" r="3" fill="#FFC940"/><path d="M3 20C8 18 11 14 12 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round"/></svg>
         <span style="font-size: 21px; font-weight: 800; letter-spacing: -0.6px">wattle</span>
       </a>
-      <div style="display: flex; align-items: center; gap: 4px 22px; flex-wrap: wrap; font-size: 14px">
-        <a href="#how" style="color: #3E4D47; text-decoration: none; padding: 12px 0">How it works</a>
-        <a href="#features" style="color: #3E4D47; text-decoration: none; padding: 12px 0">Features</a>
-        <a href="#faq" style="color: #3E4D47; text-decoration: none; padding: 12px 0">Questions</a>
-        <a href="/register/" style="background: #0F6E56; color: #FFFFFF; text-decoration: none; font-weight: 700; border-radius: 18px; padding: 9px 16px">Register interest</a>
+      <div style="display: flex; align-items: center; gap: 4px 22px; font-size: 14px">
+        <a class="navlink" href="#how" style="color: #3E4D47; text-decoration: none; padding: 12px 0">How it works</a>
+        <a class="navlink" href="#features" style="color: #3E4D47; text-decoration: none; padding: 12px 0">Features</a>
+        <a class="navlink" href="#faq" style="color: #3E4D47; text-decoration: none; padding: 12px 0">Questions</a>
+        <a href="/register/" style="background: #0F6E56; color: #FFFFFF; text-decoration: none; font-weight: 700; border-radius: 18px; padding: 9px 16px; white-space: nowrap">Register interest</a>
       </div>
     </div>
   </nav>
 
   <section id="top" style="padding: 88px 24px 0; text-align: center; overflow: hidden; background: #FFFFFF">
     <div style="max-width: 900px; margin: 0 auto">
-      <div style="font-size: 17px; font-weight: 700; color: #B07600">Friends and family preview · Tesla Powerwall on Amber</div>
+      <div style="font-size: 17px; font-weight: 700; color: #B07600">Friends and family preview · Tesla Powerwall</div>
       <h1 style="margin: 12px 0 0; font-size: clamp(44px, 8vw, 88px); line-height: 1.02; font-weight: 800; letter-spacing: -0.045em">Make your battery<br>pay its way.</h1>
       <p style="margin: 22px auto 0; max-width: 640px; font-size: clamp(18px, 2.2vw, 22px); line-height: 1.45; color: #3E4D47">wattle watches Amber's live prices and runs your Powerwall for you. It charges when power is cheap, sells when it pays, and always keeps enough for your night.</p>
       <div style="display: flex; justify-content: center; align-items: center; gap: 12px 28px; flex-wrap: wrap; margin-top: 32px">
