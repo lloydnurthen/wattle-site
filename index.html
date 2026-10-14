@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>wattle: make your battery pay its way</title>
-<meta name="description" content="wattle runs your Tesla Powerwall against Amber's live prices: charging when power is cheap, selling when it pays, and keeping enough for your night. Free for friends and family while it's new.">
+<meta name="description" content="wattle runs your Tesla Powerwall against Amber's live prices: charging when power is cheap, selling when it pays, and keeping enough for your night. Free during the preview.">
 <meta property="og:title" content="wattle: make your battery pay its way">
 <meta property="og:description" content="Runs your Powerwall against Amber's live prices, so every bill ends in credit.">
 <meta property="og:url" content="https://wattle.nurthen.au/">
@@ -20,6 +20,17 @@
   html { scroll-behavior: smooth; }
   /* Phones: logo and the button on one line; the section links are on the page anyway. */
   @media (max-width: 640px) { .navlink { display: none; } }
+  /* The plan chart draws itself: the price line left to right, each charge and sell window as the line reaches it. */
+  .plan-chart.wait .price-line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .plan-chart.wait .band { opacity: 0; }
+  .plan-chart.play .price-line { stroke-dasharray: 1; animation: wdraw 2.4s cubic-bezier(.4,0,.2,1) both; }
+  .plan-chart.play .band { transform-box: fill-box; transform-origin: 50% 100%; animation: wrise .7s ease-out both; animation-delay: var(--d); }
+  @keyframes wdraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes wrise { from { opacity: 0; transform: scaleY(0.15); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .plan-chart .price-line, .plan-chart .band { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; } }
+  .wm { font-weight: 800; letter-spacing: -0.01em; }
+  .steps { scrollbar-width: none; }
+  .steps::-webkit-scrollbar { display: none; }
 </style>
 </head>
 <body>
@@ -42,9 +53,9 @@
 
   <section id="top" style="padding: 88px 24px 0; text-align: center; overflow: hidden; background: #FFFFFF">
     <div style="max-width: 900px; margin: 0 auto">
-      <div style="font-size: 17px; font-weight: 700; color: #B07600">Friends and family preview · Tesla Powerwall</div>
+      <div style="font-size: 17px; font-weight: 700; color: #B07600">Private preview · Tesla Powerwall</div>
       <h1 style="margin: 12px 0 0; font-size: clamp(44px, 8vw, 88px); line-height: 1.02; font-weight: 800; letter-spacing: -0.045em">Make your battery<br>pay its way.</h1>
-      <p style="margin: 22px auto 0; max-width: 640px; font-size: clamp(18px, 2.2vw, 22px); line-height: 1.45; color: #3E4D47">wattle watches Amber's live prices and runs your Powerwall for you. It charges when power is cheap, sells when it pays, and always keeps enough for your night.</p>
+      <p style="margin: 22px auto 0; max-width: 640px; font-size: clamp(18px, 2.2vw, 22px); line-height: 1.45; color: #3E4D47"><span class="wm">wattle</span> watches Amber's live prices and runs your Powerwall for you. It charges when power is cheap, sells when it pays, and always keeps enough for your night.</p>
       <div style="display: flex; justify-content: center; align-items: center; gap: 12px 28px; flex-wrap: wrap; margin-top: 32px">
         <a href="/register/" style="background: #0F6E56; color: #FFFFFF; text-decoration: none; font-weight: 700; font-size: 17px; border-radius: 26px; padding: 15px 28px">Register interest</a>
         <a href="#how" style="font-size: 17px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 12px 0">See how it works <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"></path></svg></a>
@@ -88,16 +99,16 @@
   <section style="background: #0B2B22; color: #FFFFFF; padding: 110px 24px">
     <div style="max-width: 1040px; margin: 0 auto">
       <h2 style="margin: 0; font-size: clamp(36px, 5.5vw, 64px); line-height: 1.05; font-weight: 800; letter-spacing: -0.04em; max-width: 760px">Every minute, it plans the next two days.</h2>
-      <p style="margin: 20px 0 0; max-width: 620px; font-size: 20px; line-height: 1.5; color: #B9D6CA">Prices on Amber change every five minutes. wattle looks at the forecast, your solar and how much your home uses at night, then picks the best moments to charge and sell.</p>
+      <p style="margin: 20px 0 0; max-width: 620px; font-size: 20px; line-height: 1.5; color: #B9D6CA">Prices on Amber change every five minutes. <span class="wm">wattle</span> looks at the forecast, your solar and how much your home uses at night, then picks the best moments to charge and sell.</p>
       <div style="margin-top: 56px; background: #12392E; border-radius: 28px; padding: 28px 24px 20px">
-        <svg role="img" aria-label="Sample price forecast over two days, with charging when prices are low around midday and selling in the evening peaks" viewBox="0 0 960 300" width="100%" style="display: block">
-          <rect x="70" y="0" width="120" height="250" fill="#6BA8D6" opacity="0.18"></rect>
-          <rect x="550" y="0" width="120" height="250" fill="#6BA8D6" opacity="0.18"></rect>
-          <rect x="300" y="0" width="70" height="250" fill="#F2A71B" opacity="0.22"></rect>
-          <rect x="780" y="0" width="70" height="250" fill="#F2A71B" opacity="0.22"></rect>
+        <svg class="plan-chart" role="img" aria-label="Sample price forecast over two days, with charging when prices are low around midday and selling in the evening peaks" viewBox="0 0 960 300" width="100%" style="display: block">
+          <rect class="band" style="--d: 0.2s" x="70" y="0" width="120" height="250" fill="#6BA8D6" fill-opacity="0.18"></rect>
+          <rect class="band" style="--d: 1.4s" x="550" y="0" width="120" height="250" fill="#6BA8D6" fill-opacity="0.18"></rect>
+          <rect class="band" style="--d: 0.75s" x="300" y="0" width="70" height="250" fill="#F2A71B" fill-opacity="0.22"></rect>
+          <rect class="band" style="--d: 1.95s" x="780" y="0" width="70" height="250" fill="#F2A71B" fill-opacity="0.22"></rect>
           <line x1="0" y1="250" x2="960" y2="250" stroke="#3F6B5C" stroke-width="1"></line>
           <line x1="0" y1="205" x2="960" y2="205" stroke="#2C5446" stroke-width="1" stroke-dasharray="4 6"></line>
-          <path d="M0 170 C40 175 60 210 100 222 C140 232 170 230 200 205 C240 170 260 120 300 60 C320 30 345 25 365 70 C390 120 420 150 470 165 C520 178 540 215 580 225 C620 232 650 228 680 200 C720 160 745 100 780 50 C800 22 830 20 850 65 C880 120 910 150 960 160" fill="none" stroke="#FFC940" stroke-width="4" stroke-linecap="round"></path>
+          <path d="M0 170 C40 175 60 210 100 222 C140 232 170 230 200 205 C240 170 260 120 300 60 C320 30 345 25 365 70 C390 120 420 150 470 165 C520 178 540 215 580 225 C620 232 650 228 680 200 C720 160 745 100 780 50 C800 22 830 20 850 65 C880 120 910 150 960 160" class="price-line" pathLength="1" fill="none" stroke="#FFC940" stroke-width="4" stroke-linecap="round"></path>
           <text x="0" y="285" fill="#B9D6CA" font-size="15" font-family="Plus Jakarta Sans, sans-serif">Now</text>
           <text x="105" y="285" fill="#B9D6CA" font-size="15" font-family="Plus Jakarta Sans, sans-serif">Midday</text>
           <text x="300" y="285" fill="#B9D6CA" font-size="15" font-family="Plus Jakarta Sans, sans-serif">Evening</text>
@@ -119,7 +130,7 @@
     <div style="max-width: 860px; margin: 0 auto">
       <div style="font-size: 17px; font-weight: 700; color: #B07600">The goal</div>
       <h2 style="margin: 12px 0 0; font-size: clamp(40px, 7vw, 80px); line-height: 1.02; font-weight: 800; letter-spacing: -0.045em">Every bill ends in credit.</h2>
-      <p style="margin: 22px auto 0; max-width: 600px; font-size: 20px; line-height: 1.5; color: #3E4D47">Your Powerwall already stores power. wattle makes it trade, so the battery earns more than your home costs to run.</p>
+      <p style="margin: 22px auto 0; max-width: 600px; font-size: 20px; line-height: 1.5; color: #3E4D47">Your Powerwall already stores power. <span class="wm">wattle</span> makes it trade, so the battery earns more than your home costs to run.</p>
     </div>
   </section>
 
@@ -131,7 +142,7 @@
         <div style="flex: 2 1 520px; background: #FFFFFF; border-radius: 28px; padding: 36px; min-height: 300px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 24px">
           <div>
             <h3 style="margin: 0; font-size: 28px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em">Never exports at a loss.</h3>
-            <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: #3E4D47; max-width: 460px">When the feed-in price drops below the level you set, wattle stops sending solar to the grid and fills your battery instead.</p>
+            <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: #3E4D47; max-width: 460px">When the feed-in price drops below the level you set, <span class="wm">wattle</span> stops sending solar to the grid and fills your battery instead.</p>
           </div>
           <div style="display: flex; align-items: center; gap: 14px; background: #F3F6F4; border-radius: 18px; padding: 14px 16px; max-width: 420px">
             <div style="width: 40px; height: 40px; border-radius: 20px; background: #FFF1CF; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#8A5A00" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"></circle><path d="M10 1.5v2M10 16.5v2M1.5 10h2M16.5 10h2M4 4l1.4 1.4M14.6 14.6L16 16M4 16l1.4-1.4M14.6 5.4L16 4"></path></svg></div>
@@ -140,7 +151,7 @@
         </div>
 
         <div style="flex: 1 1 300px; background: #0F6E56; color: #FFFFFF; border-radius: 28px; padding: 36px; min-height: 300px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 24px">
-          <svg aria-hidden="true" width="56" height="56" viewBox="0 0 56 56" fill="none"><path d="M16 36a14 14 0 1 0 6-22" stroke="#FFC940" stroke-width="4" stroke-linecap="round"></path><circle cx="38" cy="16" r="4" fill="#FFC940"></circle></svg>
+          <svg aria-hidden="true" width="56" height="56" viewBox="0 0 56 56"><path d="M33 8A20 20 0 1 0 48 38A16 16 0 0 1 33 8Z" fill="#FFC940"></path><circle cx="44" cy="12" r="2" fill="#FFE59A"></circle><circle cx="50" cy="22" r="1.4" fill="#FFE59A"></circle></svg>
           <div>
             <h3 style="margin: 0; font-size: 28px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em">Keeps enough for tonight.</h3>
             <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: #CFE6DC">It learns how much your home uses after dark, and never sells what you'll need.</p>
@@ -151,12 +162,12 @@
           <svg aria-hidden="true" width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#0F6E56" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 6l18 7v13c0 12-8 20-18 24C18 46 10 38 10 26V13z"></path><path d="M20 28l6 6 11-12"></path></svg>
           <div>
             <h3 style="margin: 0; font-size: 26px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em">Safe if anything stops.</h3>
-            <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: #3E4D47">If wattle loses prices or your battery for 15 minutes, your Powerwall goes back to Self-Powered with your backup reserve.</p>
+            <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: #3E4D47">If <span class="wm">wattle</span> loses prices or your battery for 15 minutes, your Powerwall goes back to Self-Powered with your backup reserve.</p>
           </div>
         </div>
 
         <div style="flex: 1 1 300px; background: #FFFFFF; border-radius: 28px; padding: 36px; min-height: 280px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 24px">
-          <div style="font-size: 56px; line-height: 1; font-weight: 800; letter-spacing: -0.04em; color: #0F6E56">¢</div>
+          <div style="background: #F3F6F4; border-radius: 18px; padding: 14px 16px; max-width: 280px"><div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 14px; font-weight: 700; color: #5B6B64">Today</span><span style="font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: #0F6E56">+$4.82</span></div><div style="display: flex; justify-content: space-between; font-size: 14px; color: #3E4D47; margin-top: 6px"><span>Sold 9.1 kWh</span><span>+$6.10</span></div><div style="display: flex; justify-content: space-between; font-size: 14px; color: #3E4D47; margin-top: 2px"><span>Bought 3.4 kWh</span><span>−$1.28</span></div></div>
           <div>
             <h3 style="margin: 0; font-size: 26px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em">See every cent.</h3>
             <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: #3E4D47">What you bought, what you sold, and how the month is tracking, checked against your Amber bill.</p>
@@ -182,33 +193,12 @@
   <section id="how" style="background: #FFFFFF; padding: 110px 24px">
     <div style="max-width: 1120px; margin: 0 auto">
       <h2 style="margin: 0; font-size: clamp(34px, 5vw, 56px); line-height: 1.05; font-weight: 800; letter-spacing: -0.04em">Set up in an evening.</h2>
-      <p style="margin: 14px 0 0; max-width: 600px; font-size: 19px; line-height: 1.5; color: #3E4D47">No new hardware. wattle talks to your Powerwall through Tesla, and to Amber for prices.</p>
-      <ol style="list-style: none; margin: 48px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 20px">
-        <li style="flex: 1 1 240px; border-top: 3px solid #0F6E56; padding-top: 20px">
-          <div style="font-size: 15px; font-weight: 800; color: #0F6E56">1</div>
-          <div style="font-size: 22px; font-weight: 800; margin-top: 6px; letter-spacing: -0.01em">Register interest</div>
-          <div style="font-size: 16px; line-height: 1.5; color: #3E4D47; margin-top: 6px">Tell us about your home, battery and solar. Two minutes.</div>
-        </li>
-        <li style="flex: 1 1 240px; border-top: 3px solid #0F6E56; padding-top: 20px">
-          <div style="font-size: 15px; font-weight: 800; color: #0F6E56">2</div>
-          <div style="font-size: 22px; font-weight: 800; margin-top: 6px; letter-spacing: -0.01em">Connect Tesla and Amber</div>
-          <div style="font-size: 16px; line-height: 1.5; color: #3E4D47; margin-top: 6px">Sign in on their own sites. wattle never sees your passwords. In New Zealand, you enter your plan's rates instead of Amber.</div>
-        </li>
-        <li style="flex: 1 1 240px; border-top: 3px solid #C9D6D0; padding-top: 20px">
-          <div style="font-size: 15px; font-weight: 800; color: #5B6B64">3</div>
-          <div style="font-size: 22px; font-weight: 800; margin-top: 6px; letter-spacing: -0.01em">It watches first</div>
-          <div style="font-size: 16px; line-height: 1.5; color: #3E4D47; margin-top: 6px">For a few days wattle only plans, so you can see what it would do.</div>
-        </li>
-        <li style="flex: 1 1 240px; border-top: 3px solid #C9D6D0; padding-top: 20px">
-          <div style="font-size: 15px; font-weight: 800; color: #5B6B64">4</div>
-          <div style="font-size: 22px; font-weight: 800; margin-top: 6px; letter-spacing: -0.01em">You switch it on</div>
-          <div style="font-size: 16px; line-height: 1.5; color: #3E4D47; margin-top: 6px">Then it runs on its own. Pause or take over any time.</div>
-        </li>
-      </ol>
+      <p style="margin: 14px 0 0; max-width: 600px; font-size: 19px; line-height: 1.5; color: #3E4D47">No new hardware. <span class="wm">wattle</span> talks to your Powerwall through Tesla, and to Amber for prices.</p>
+      <ol id="steps" class="steps" style="list-style: none; margin: 48px -24px 0; padding: 0 24px 8px; display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 24px"><li style="flex: 0 0 min(340px, 84%); scroll-snap-align: start; background: #F3F6F4; color: #12201B; border-radius: 28px; padding: 32px; min-height: 440px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 28px"><div><div style="font-size: 15px; font-weight: 800; color: #0F6E56">Step 1</div><div style="font-size: 26px; font-weight: 800; margin-top: 8px; letter-spacing: -0.02em; line-height: 1.15">Register interest</div><div style="font-size: 17px; line-height: 1.5; color: #3E4D47; margin-top: 10px">Tell us about your home, battery and solar. Two minutes.</div></div><div style="background: #FFFFFF; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px"><div style="border: 1.5px solid #D5DED9; border-radius: 12px; padding: 10px 12px; font-size: 15px"><span style="color: #5B6B64">Postcode</span> &nbsp;2229</div><div style="border: 1.5px solid #D5DED9; border-radius: 12px; padding: 10px 12px; font-size: 15px"><span style="color: #5B6B64">Battery</span> &nbsp;Powerwall 2</div><div style="background: #FFC940; border-radius: 22px; height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px">Register interest</div></div></li><li style="flex: 0 0 min(340px, 84%); scroll-snap-align: start; background: #F3F6F4; color: #12201B; border-radius: 28px; padding: 32px; min-height: 440px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 28px"><div><div style="font-size: 15px; font-weight: 800; color: #0F6E56">Step 2</div><div style="font-size: 26px; font-weight: 800; margin-top: 8px; letter-spacing: -0.02em; line-height: 1.15">Connect Tesla and Amber</div><div style="font-size: 17px; line-height: 1.5; color: #3E4D47; margin-top: 10px">Sign in on their own sites. In New Zealand, or not on Amber, you give your plan's rates instead.</div></div><div style="display: flex; flex-direction: column; gap: 10px"><div style="background: #FFFFFF; border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px">Tesla account<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0F6E56" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"></path></svg></div><div style="background: #FFFFFF; border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px">Amber, or your plan<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0F6E56" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"></path></svg></div><div style="font-size: 14px; color: #5B6B64; padding: 0 4px">Passwords stay with Tesla and Amber.</div></div></li><li style="flex: 0 0 min(340px, 84%); scroll-snap-align: start; background: #FFF6DC; color: #12201B; border-radius: 28px; padding: 32px; min-height: 440px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 28px"><div><div style="font-size: 15px; font-weight: 800; color: #B07600">Step 3</div><div style="font-size: 26px; font-weight: 800; margin-top: 8px; letter-spacing: -0.02em; line-height: 1.15">It watches first</div><div style="font-size: 17px; line-height: 1.5; color: #4A3500; margin-top: 10px">For a few days <span class="wm">wattle</span> only plans, so you can see what it would do.</div></div><div style="background: #FFFFFF; border-radius: 18px; padding: 16px; display: flex; gap: 12px; align-items: flex-start"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B07600" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg><div><div style="font-weight: 800; font-size: 16px">Watching only</div><div style="font-size: 14px; color: #3E4D47; margin-top: 4px; line-height: 1.45">Would have sold 4.2 kWh at 38c at 6:30 pm.</div></div></div></li><li style="flex: 0 0 min(340px, 84%); scroll-snap-align: start; background: #0F6E56; color: #FFFFFF; border-radius: 28px; padding: 32px; min-height: 440px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 28px"><div><div style="font-size: 15px; font-weight: 800; color: #FFC940">Step 4</div><div style="font-size: 26px; font-weight: 800; margin-top: 8px; letter-spacing: -0.02em; line-height: 1.15">You switch it on</div><div style="font-size: 17px; line-height: 1.5; color: #CFE6DC; margin-top: 10px">Then it runs on its own. Take over any time.</div></div><div style="background: rgba(255,255,255,0.12); border-radius: 18px; padding: 16px; display: flex; align-items: center; justify-content: space-between"><div><div style="font-weight: 800; font-size: 16px">Automatic</div><div style="font-size: 14px; color: #CFE6DC; margin-top: 2px">Pause any time</div></div><div style="width: 52px; height: 32px; border-radius: 16px; background: #FFC940; position: relative"><div style="position: absolute; right: 3px; top: 3px; width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF"></div></div></div></li></ol><div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px"><button type="button" class="steps-nav" data-dir="-1" aria-label="Previous step" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #E8EEEB; color: #12201B; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3L5 9l6 6"></path></svg></button><button type="button" class="steps-nav" data-dir="1" aria-label="Next step" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #E8EEEB; color: #12201B; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3l6 6-6 6"></path></svg></button></div>
 
       <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 64px">
         <div style="flex: 1 1 300px; background: #F3F6F4; border-radius: 20px; padding: 22px 24px">
-          <div style="font-size: 13px; font-weight: 700; color: #5B6B64; letter-spacing: 0.4px">WORKS WITH</div>
+          <div style="font-size: 13px; font-weight: 700; color: #5B6B64; letter-spacing: 0.4px">CURRENTLY WORKS WITH</div>
           <div style="font-size: 19px; font-weight: 700; margin-top: 8px; line-height: 1.5">Tesla Powerwall 2 and 3<br>Amber Electric in Australia<br>Your power plan in New Zealand</div>
         </div>
         <div style="flex: 1 1 300px; background: #F3F6F4; border-radius: 20px; padding: 22px 24px">
@@ -225,19 +215,19 @@
       <div style="display: flex; flex-direction: column; gap: 10px">
         <details open style="background: #FFFFFF; border-radius: 18px; padding: 20px 24px">
           <summary style="font-size: 19px; font-weight: 700">Do I need to be with Amber?</summary>
-          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.55; color: #3E4D47">For now, yes. wattle works by following Amber's live wholesale prices. If you're with someone else, register anyway and tell us who. We'll let you know whether switching makes sense for you.</p>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.55; color: #3E4D47">For now, yes. <span class="wm">wattle</span> works by following Amber's live wholesale prices. If you're with someone else, register anyway and tell us who. We'll let you know whether switching makes sense for you.</p>
         </details>
         <details style="background: #FFFFFF; border-radius: 18px; padding: 20px 24px">
-          <summary style="font-size: 19px; font-weight: 700">Does wattle get my Tesla password?</summary>
-          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.55; color: #3E4D47">No. You sign in on Tesla's own website and Tesla gives wattle permission for your energy products only. You can take it away any time in your Tesla account.</p>
+          <summary style="font-size: 19px; font-weight: 700">Does <span class="wm">wattle</span> get my Tesla password?</summary>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.55; color: #3E4D47">No. You sign in on Tesla's own website and Tesla gives <span class="wm">wattle</span> permission for your energy products only. You can take it away any time in your Tesla account.</p>
         </details>
         <details style="background: #FFFFFF; border-radius: 18px; padding: 20px 24px">
-          <summary style="font-size: 19px; font-weight: 700">What if wattle goes offline?</summary>
+          <summary style="font-size: 19px; font-weight: 700">What if <span class="wm">wattle</span> goes offline?</summary>
           <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.55; color: #3E4D47">Your Powerwall goes back to Self-Powered with your backup reserve, just as it was before wattle.</p>
         </details>
         <details style="background: #FFFFFF; border-radius: 18px; padding: 20px 24px">
           <summary style="font-size: 19px; font-weight: 700">What does it cost?</summary>
-          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.55; color: #3E4D47">Nothing. wattle is free for friends and family while it's new.<a href="#fn-cost" id="fn-cost-ref" aria-label="Footnote 1" style="text-decoration: none; font-weight: 700"><sup>1</sup></a></p>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.55; color: #3E4D47">Nothing during the preview.<a href="#fn-cost" id="fn-cost-ref" aria-label="Footnote 1" style="text-decoration: none; font-weight: 700"><sup>1</sup></a></p>
         </details>
       </div>
     </div>
@@ -246,7 +236,7 @@
   <section style="background: #0F6E56; color: #FFFFFF; padding: 110px 24px; text-align: center">
     <svg aria-hidden="true" width="72" height="72" viewBox="0 0 22 22"><circle cx="7" cy="8" r="3.2" fill="#FFC940"/><circle cx="14" cy="6" r="2.6" fill="#FFC940"/><circle cx="15" cy="13" r="3" fill="#FFC940"/><path d="M3 20C8 18 11 14 12 9" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/></svg>
     <h2 style="margin: 18px 0 0; font-size: clamp(36px, 6vw, 68px); line-height: 1.04; font-weight: 800; letter-spacing: -0.045em">Ready when your battery is.</h2>
-    <p style="margin: 16px auto 0; max-width: 520px; font-size: 19px; line-height: 1.5; color: #CFE6DC">wattle is just for friends and family for now. Register your interest and Lloyd will be in touch.</p>
+    <p style="margin: 16px auto 0; max-width: 520px; font-size: 19px; line-height: 1.5; color: #CFE6DC"><span class="wm">wattle</span> is in private preview. Register your interest and we'll be in touch when there's a place for your home.</p>
     <a href="/register/" style="display: inline-block; margin-top: 30px; background: #FFC940; color: #12201B; text-decoration: none; font-weight: 800; font-size: 17px; border-radius: 26px; padding: 15px 30px">Register interest</a>
   </section>
 
@@ -257,8 +247,8 @@
           <svg aria-hidden="true" width="24" height="24" viewBox="0 0 22 22"><circle cx="7" cy="8" r="3.2" fill="#FFC940"/><circle cx="14" cy="6" r="2.6" fill="#FFC940"/><circle cx="15" cy="13" r="3" fill="#FFC940"/><path d="M3 20C8 18 11 14 12 9" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/></svg>
           <span style="font-size: 18px; font-weight: 800; letter-spacing: -0.5px">wattle</span>
         </div>
-        <div>wattle is an independent project, not made by or affiliated with Tesla or Amber Electric. Tesla and Powerwall are trademarks of Tesla, Inc.</div>
-        <div id="fn-cost"><sup>1</sup> There may be a cost later. We'll tell you well before anything changes, and you can stop using wattle at any time. <a href="#fn-cost-ref" aria-label="Back to the question" style="color: #FFFFFF; text-decoration: none">↩</a></div>
+        <div><span class="wm">wattle</span> is an independent project, not made by or affiliated with Tesla or Amber Electric. Tesla and Powerwall are trademarks of Tesla, Inc.</div>
+        <div id="fn-cost"><sup>1</sup> There may be a cost later. We'll tell you well before anything changes, and you can stop using <span class="wm">wattle</span> at any time. <a href="#fn-cost-ref" aria-label="Back to the question" style="color: #FFFFFF; text-decoration: none">↩</a></div>
         <div>© 2026 Lloyd Nurthen. All rights reserved.</div>
       </div>
       <div style="display: flex; gap: 22px; flex-wrap: wrap">
@@ -269,5 +259,23 @@
     </div>
   </footer>
 </div>
+<script>
+  // Plan chart: play the animation when it scrolls into view.
+  (function () {
+    var c = document.querySelector('.plan-chart');
+    if (!c || !('IntersectionObserver' in window)) return;
+    c.classList.add('wait');
+    new IntersectionObserver(function (e, o) {
+      if (e[0].isIntersecting) { c.classList.remove('wait'); c.classList.add('play'); o.disconnect(); }
+    }, { threshold: 0.4 }).observe(c);
+  })();
+  // Step cards: the arrow buttons scroll one card at a time.
+  document.querySelectorAll(".steps-nav").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var row = document.getElementById("steps"), card = row.querySelector("li");
+      row.scrollBy({ left: Number(b.dataset.dir) * (card.offsetWidth + 20), behavior: "smooth" });
+    });
+  });
+</script>
 </body>
 </html>
