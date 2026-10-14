@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Register your interest · wattle</title>
-<meta name="description" content="Register your interest in wattle. Friends and family only for now.">
+<meta name="description" content="Register your interest in wattle. Private preview.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Ccircle cx='7' cy='8' r='3.2' fill='%23FFC940'/%3E%3Ccircle cx='14' cy='6' r='2.6' fill='%23FFC940'/%3E%3Ccircle cx='15' cy='13' r='3' fill='%23FFC940'/%3E%3Cpath d='M3 20C8 18 11 14 12 9' fill='none' stroke='%230F6E56' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -99,7 +99,7 @@
   <aside>
     <svg aria-hidden="true" width="56" height="56" viewBox="0 0 22 22"><circle cx="7" cy="8" r="3.2" fill="#FFC940"/><circle cx="14" cy="6" r="2.6" fill="#FFC940"/><circle cx="15" cy="13" r="3" fill="#FFC940"/><path d="M3 20C8 18 11 14 12 9" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/></svg>
     <h1>Register your interest</h1>
-    <p>wattle is open to friends and family for now. Tell us about your home and Lloyd will be in touch about whether it suits.</p>
+    <p>wattle is in private preview. Tell us about your home and we'll be in touch about whether it suits.</p>
     <div class="points">
       <div class="point"><span class="num">1</span>About two minutes</div>
       <div class="point"><span class="num">2</span>No passwords here. You connect Tesla (and Amber, in Australia) later, on their own sites.</div>
@@ -113,7 +113,7 @@
       <h2 id="thanks-title">Thanks. We've got your details.</h2>
       <p style="margin:0;font-size:17px;line-height:1.5;color:#3E4D47" id="thanks-sub">We've emailed you a copy from wattle@nurthen.au. Here's what happens next.</p>
       <ol>
-        <li><span class="num">1</span><span><strong>Lloyd looks over your details.</strong> He'll reply by email if anything's unclear.</span></li>
+        <li><span class="num">1</span><span><strong>We look over your details.</strong> We'll reply by email if anything's unclear.</span></li>
         <li><span class="num">2</span><span><strong>If wattle suits your home, you get an invite.</strong> It has a link to connect Tesla, choose your Powerwall, and connect Amber or, in New Zealand, enter your power plan's rates.</span></li>
         <li><span class="num">3</span><span><strong>wattle watches first.</strong> A few days of plans and a report before you switch it on.</span></li>
       </ol>
@@ -238,7 +238,7 @@
           <input type="file" id="bills" accept="image/*,application/pdf" multiple>
         </label>
         <div class="chosen" id="chosen"></div>
-        <p class="hint" style="margin:0">Your bill shows your name, address and account number. Only Lloyd sees it, and it's deleted once your rates are set up, or after 90 days at most. <a href="/privacy/#bills">How we handle bills</a></p>
+        <p class="hint" style="margin:0">Your bill shows your name, address and account number. Only the wattle team sees it, and it's deleted once your rates are set up, or after 90 days at most. <a href="/privacy/#bills">How we handle bills</a></p>
       </fieldset>
 
       <div class="trap" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
@@ -519,7 +519,7 @@ function mailtoFor(b) {
   }
   if (bills.length) lines.push("", "(I'll attach a photo of my bill to this email.)");
   return "mailto:wattle@nurthen.au?subject=" + encodeURIComponent("Register interest: " + b.first_name) +
-    "&body=" + encodeURIComponent("Hi Lloyd,\n\nI'd like to register my interest in wattle.\n\n" + lines.join("\n") + "\n");
+    "&body=" + encodeURIComponent("Hello,\n\nI'd like to register my interest in wattle.\n\n" + lines.join("\n") + "\n");
 }
 
 function showProblems(list, mailto) {
