@@ -186,8 +186,10 @@
             <label><input type="radio" name="battery" value="Powerwall 3"><span>Powerwall 3</span></label>
             <label><input type="radio" name="battery" value="Powerwall 2"><span>Powerwall 2</span></label>
             <label><input type="radio" name="battery" value="Another battery"><span>Another battery</span></label>
+            <label><input type="radio" name="battery" value="No battery yet"><span>No battery yet</span></label>
           </div>
         </div>
+        <div class="note" id="no-battery-note" hidden>Solar only is welcome. wattle watches your solar and prices, tells you the best times to use power, and shows what a battery would make you.</div>
         <div class="row" id="how-many" style="align-items:center" hidden>
           <span class="label" id="count-label">How many?</span>
           <div class="stepper" role="group" aria-labelledby="count-label">
@@ -201,9 +203,18 @@
           <span class="hint">wattle only runs Powerwalls today. We'll tell you when yours is supported.</span>
         </div>
 
+        <div class="f" id="inverter-box" hidden>
+          <label for="inverter">Solar inverter brand <span class="opt">(optional)</span></label>
+          <select id="inverter" name="inverter">
+            <option value="">Choose</option>
+            <option>Fronius</option><option>SolarEdge</option><option>SMA</option><option>Enphase</option>
+            <option>Sungrow</option><option>GoodWe</option><option>Tesla</option><option>Other</option><option>Not sure</option>
+          </select>
+          <span class="hint">It's on the inverter itself, usually on the wall near your switchboard.</span>
+        </div>
         <div class="row">
           <div class="f">
-            <label for="solar_kw">Solar size <span class="opt">(optional)</span></label>
+            <label for="solar_kw">Solar size <span class="opt" id="solar-opt">(optional)</span></label>
             <div class="unit"><input id="solar_kw" name="solar_kw" inputmode="decimal" placeholder="10.2" maxlength="6"><span>kW</span></div>
           </div>
           <div class="f">
@@ -434,8 +445,10 @@ form.addEventListener("change", (e) => { if (e.target.name === "country") showCo
 showCountry();
 form.addEventListener("change", (e) => {
   if (e.target.name !== "battery") return;
-  const other = e.target.value === "Another battery";
-  $("how-many").hidden = other; $("other-battery-box").hidden = !other;
+  const other = e.target.value === "Another battery", none = e.target.value === "No battery yet";
+  $("how-many").hidden = other || none; $("other-battery-box").hidden = !other;
+  // Solar only (FR-SO1): no "How many", and the solar size is needed.
+  $("inverter-box").hidden = !none; $("no-battery-note").hidden = !none; $("solar-opt").hidden = none;
 });
 $("less").onclick = () => { count = Math.max(1, count - 1); $("count").textContent = count; };
 $("more").onclick = () => { count = Math.min(4, count + 1); $("count").textContent = count; };
@@ -452,6 +465,7 @@ form.addEventListener("submit", async (e) => {
       : list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : $("network").value),
     phase: v("phase"), retailer: v("retailer"), battery: v("battery"), battery_count: count,
     other_battery: v("other_battery"), solar_kw: v("solar_kw"), heard_from: v("heard_from"),
+    inverter: v("battery") === "No battery yet" ? v("inverter") : "",
     website: v("website"), consent: $("consent").checked,
     plan: $("plan-box").hidden ? undefined : planFromForm(),
   };
@@ -469,6 +483,7 @@ form.addEventListener("submit", async (e) => {
   if (!body.retailer) problems.push("Please choose who you buy power from.");
   if (!body.battery) problems.push("Please choose your battery.");
   else if (body.battery === "Another battery" && !body.other_battery.trim()) problems.push("Please tell us which battery you have.");
+  else if (body.battery === "No battery yet" && !body.solar_kw.trim()) problems.push("Please add the size of your solar in kW, for example 6.6.");
   (body.plan ? body.plan.rates : []).forEach((r, i) => {
     if (!r.days || !r.from || !r.to) problems.push("Rate " + (i + 1) + (r.label ? " (" + r.label + ")" : "") + ": please choose the days and times.");
   });
@@ -508,7 +523,7 @@ function mailtoFor(b) {
   const lines = [
     "Name: " + [b.first_name, b.last_name].filter(Boolean).join(" "), "Email: " + b.email, "Mobile: " + (b.mobile || "-"),
     "Postcode: " + b.postcode + (b.suburb ? " (" + b.suburb + ")" : "") + (b.country === "NZ" ? ", New Zealand" : ""), "Network: " + b.network, "Power supply: " + b.phase,
-    "Retailer: " + b.retailer, "Battery: " + (b.battery === "Another battery" ? (b.other_battery || "Another battery") : b.battery_count + " x " + b.battery),
+    "Retailer: " + b.retailer, "Battery: " + (b.battery === "No battery yet" ? "No battery yet" + (b.inverter ? " (" + b.inverter + " inverter)" : "") : b.battery === "Another battery" ? (b.other_battery || "Another battery") : b.battery_count + " x " + b.battery),
     "Solar: " + (b.solar_kw ? b.solar_kw + " kW" : "-"), "Heard about wattle from: " + (b.heard_from || "-"),
   ];
   if (b.plan) {
