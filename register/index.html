@@ -399,8 +399,7 @@ async function showSuburbs() {
   pick.disabled = false;
   pick.replaceChildren(choose(list.length ? "Choose your suburb" : "We couldn't find that postcode"),
     ...list.map((n) => new Option(n, n)), new Option(list.length ? "My suburb isn't listed" : "Type my suburb", OTHER));
-  if (list.length === 1) pick.value = list[0];
-  else if (list.includes(before)) pick.value = before;
+  if (list.includes(before)) pick.value = before;
   else if (!list.length) pick.value = OTHER;
   $("suburb-own").hidden = pick.value !== OTHER;
 }
