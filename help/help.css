@@ -1,0 +1,73 @@
+/* wattle help. Everything under /help/ links relatively, so help can move to its own
+   address (for example a help subdomain) with a redirect and nothing else. */
+* { box-sizing: border-box; }
+body { margin: 0; background: #F3F6F4; color: #12201B; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+a { color: #0F6E56; }
+a:hover { color: #0A5543; }
+.top { background: #fff; border-bottom: 1px solid #E8EEEB; }
+.bar { max-width: 1120px; margin: 0 auto; padding: 0 24px; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 6px; text-decoration: none; color: #12201B; font-size: 21px; font-weight: 800; letter-spacing: -0.6px; }
+.brand .sec { font-size: 17px; font-weight: 600; letter-spacing: 0; color: #5B6B64; margin-left: 4px; padding-left: 10px; border-left: 1px solid #DCE4E0; }
+.bar .contact { font-size: 14px; text-decoration: none; color: #3E4D47; }
+.hero { background: #0F6E56; color: #fff; }
+.hero .in { max-width: 1120px; margin: 0 auto; padding: 56px 24px 48px; display: flex; flex-direction: column; gap: 18px; }
+.hero h1 { margin: 0; font-size: clamp(34px, 5vw, 48px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 800; }
+.search { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 28px; min-height: 52px; padding: 0 20px; max-width: 560px; }
+.search input { flex: 1; border: 0; outline: 0; font: inherit; font-size: 16px; color: #12201B; background: transparent; min-height: 50px; }
+.search:focus-within { box-shadow: 0 0 0 3px #FFC940; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 40px 24px 72px; display: flex; flex-direction: column; gap: 32px; }
+.wrap h2 { margin: 0 0 14px; font-size: 22px; font-weight: 800; }
+.card { background: #fff; border-radius: 16px; padding: 20px; border: 1px solid #E1E8E4; text-decoration: none; color: #12201B; }
+a.card:hover { border-color: #0F6E56; color: #12201B; }
+.popular { border-radius: 20px; padding: 24px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; }
+.popular .t { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.muted { font-size: 15px; line-height: 1.5; color: #3E4D47; margin: 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { display: inline-block; font-size: 13px; font-weight: 700; border-radius: 10px; padding: 3px 9px; white-space: nowrap; }
+.tag.watching { background: #FFF6DA; color: #4A3B0B; }
+.tag.in_control { background: #DCEFE6; color: #0A5543; }
+.tag.manual { background: #E5EEF9; color: #1D4E89; }
+.tag.safe { background: #FBE7E7; color: #8A1F23; }
+.topics { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.topic { display: flex; gap: 14px; align-items: flex-start; }
+.topic svg { flex: 0 0 auto; margin-top: 2px; }
+.topic .t { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+.soon { white-space: nowrap; font-size: 12px; font-weight: 700; color: #5B6B64; background: #EEF2F0; border-radius: 10px; padding: 2px 8px; margin-left: 6px; vertical-align: 2px; }
+.ask { background: #E3F2EC; border-radius: 16px; padding: 20px 22px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; color: #0A3D30; }
+.ask .t { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+.btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 24px; background: #0F6E56; color: #fff; text-decoration: none; font-size: 16px; font-weight: 800; }
+.btn:hover { background: #0A5543; color: #fff; }
+.none { display: none; }
+/* Articles */
+.article { max-width: 1120px; margin: 0 auto; padding: 40px 24px 64px; display: flex; gap: 48px; align-items: flex-start; }
+.article main { flex: 1 1 auto; max-width: 720px; display: flex; flex-direction: column; gap: 22px; }
+.crumbs { font-size: 14px; color: #5B6B64; }
+.crumbs a { text-decoration: none; }
+.article h1 { margin: 0; font-size: clamp(30px, 4.5vw, 42px); line-height: 1.1; letter-spacing: -0.02em; font-weight: 800; }
+.lead { margin: 0; font-size: 19px; line-height: 1.5; color: #3E4D47; }
+.sample { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 16px 18px; }
+.sample .h { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+.sample .cap { font-size: 13px; color: #5B6B64; margin-left: auto; }
+.entry { display: flex; flex-direction: column; gap: 10px; padding: 22px; scroll-margin-top: 16px; }
+.entry h2 { margin: 0; }
+.entry h2 .tag { font-size: 15px; }
+.entry p { margin: 0; font-size: 15px; line-height: 1.55; color: #3E4D47; }
+.entry p.what { font-size: 16px; color: #12201B; }
+.entry b { color: #12201B; }
+.always { border-top: 1px solid #DCE4E0; padding-top: 20px; }
+.always h2 { margin: 0 0 8px; font-size: 18px; }
+.note { background: #E3F2EC; border-radius: 16px; padding: 16px 18px; font-size: 15px; line-height: 1.5; color: #0A3D30; }
+.updated { font-size: 13px; color: #5B6B64; }
+aside { flex: 0 0 240px; display: flex; flex-direction: column; gap: 10px; position: sticky; top: 24px; }
+aside .h { font-size: 13px; font-weight: 700; color: #5B6B64; text-transform: uppercase; letter-spacing: 0.06em; }
+aside a { font-size: 15px; text-decoration: none; }
+footer { border-top: 1px solid #E1E8E4; padding: 24px; }
+footer div { max-width: 1120px; margin: 0 auto; font-size: 13px; line-height: 1.6; color: #5B6B64; }
+@media (max-width: 760px) {
+  aside { display: none; }
+  .article { padding: 28px 16px 56px; }
+  .article main { gap: 18px; }
+  .lead { font-size: 17px; }
+  .entry { padding: 18px; }
+  .bar, .hero .in, .wrap { padding-left: 16px; padding-right: 16px; }
+}
