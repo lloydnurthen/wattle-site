@@ -20,6 +20,14 @@
   html { scroll-behavior: smooth; }
   /* Phones: logo and the button on one line; the section links are on the page anyway. */
   @media (max-width: 640px) { .navlink { display: none; } }
+  /* The plan chart draws itself: the price line left to right, each charge and sell window as the line reaches it. */
+  .plan-chart.wait .price-line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .plan-chart.wait .band { opacity: 0; }
+  .plan-chart.play .price-line { stroke-dasharray: 1; animation: wdraw 2.4s cubic-bezier(.4,0,.2,1) both; }
+  .plan-chart.play .band { transform-box: fill-box; transform-origin: 50% 100%; animation: wrise .7s ease-out both; animation-delay: var(--d); }
+  @keyframes wdraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes wrise { from { opacity: 0; transform: scaleY(0.15); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .plan-chart .price-line, .plan-chart .band { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; } }
   .wm { font-weight: 800; letter-spacing: -0.01em; }
   .steps { scrollbar-width: none; }
   .steps::-webkit-scrollbar { display: none; }
@@ -93,14 +101,14 @@
       <h2 style="margin: 0; font-size: clamp(36px, 5.5vw, 64px); line-height: 1.05; font-weight: 800; letter-spacing: -0.04em; max-width: 760px">Every minute, it plans the next two days.</h2>
       <p style="margin: 20px 0 0; max-width: 620px; font-size: 20px; line-height: 1.5; color: #B9D6CA">Prices on Amber change every five minutes. <span class="wm">wattle</span> looks at the forecast, your solar and how much your home uses at night, then picks the best moments to charge and sell.</p>
       <div style="margin-top: 56px; background: #12392E; border-radius: 28px; padding: 28px 24px 20px">
-        <svg role="img" aria-label="Sample price forecast over two days, with charging when prices are low around midday and selling in the evening peaks" viewBox="0 0 960 300" width="100%" style="display: block">
-          <rect x="70" y="0" width="120" height="250" fill="#6BA8D6" opacity="0.18"></rect>
-          <rect x="550" y="0" width="120" height="250" fill="#6BA8D6" opacity="0.18"></rect>
-          <rect x="300" y="0" width="70" height="250" fill="#F2A71B" opacity="0.22"></rect>
-          <rect x="780" y="0" width="70" height="250" fill="#F2A71B" opacity="0.22"></rect>
+        <svg class="plan-chart" role="img" aria-label="Sample price forecast over two days, with charging when prices are low around midday and selling in the evening peaks" viewBox="0 0 960 300" width="100%" style="display: block">
+          <rect class="band" style="--d: 0.2s" x="70" y="0" width="120" height="250" fill="#6BA8D6" fill-opacity="0.18"></rect>
+          <rect class="band" style="--d: 1.4s" x="550" y="0" width="120" height="250" fill="#6BA8D6" fill-opacity="0.18"></rect>
+          <rect class="band" style="--d: 0.75s" x="300" y="0" width="70" height="250" fill="#F2A71B" fill-opacity="0.22"></rect>
+          <rect class="band" style="--d: 1.95s" x="780" y="0" width="70" height="250" fill="#F2A71B" fill-opacity="0.22"></rect>
           <line x1="0" y1="250" x2="960" y2="250" stroke="#3F6B5C" stroke-width="1"></line>
           <line x1="0" y1="205" x2="960" y2="205" stroke="#2C5446" stroke-width="1" stroke-dasharray="4 6"></line>
-          <path d="M0 170 C40 175 60 210 100 222 C140 232 170 230 200 205 C240 170 260 120 300 60 C320 30 345 25 365 70 C390 120 420 150 470 165 C520 178 540 215 580 225 C620 232 650 228 680 200 C720 160 745 100 780 50 C800 22 830 20 850 65 C880 120 910 150 960 160" fill="none" stroke="#FFC940" stroke-width="4" stroke-linecap="round"></path>
+          <path d="M0 170 C40 175 60 210 100 222 C140 232 170 230 200 205 C240 170 260 120 300 60 C320 30 345 25 365 70 C390 120 420 150 470 165 C520 178 540 215 580 225 C620 232 650 228 680 200 C720 160 745 100 780 50 C800 22 830 20 850 65 C880 120 910 150 960 160" class="price-line" pathLength="1" fill="none" stroke="#FFC940" stroke-width="4" stroke-linecap="round"></path>
           <text x="0" y="285" fill="#B9D6CA" font-size="15" font-family="Plus Jakarta Sans, sans-serif">Now</text>
           <text x="105" y="285" fill="#B9D6CA" font-size="15" font-family="Plus Jakarta Sans, sans-serif">Midday</text>
           <text x="300" y="285" fill="#B9D6CA" font-size="15" font-family="Plus Jakarta Sans, sans-serif">Evening</text>
@@ -252,6 +260,15 @@
   </footer>
 </div>
 <script>
+  // Plan chart: play the animation when it scrolls into view.
+  (function () {
+    var c = document.querySelector('.plan-chart');
+    if (!c || !('IntersectionObserver' in window)) return;
+    c.classList.add('wait');
+    new IntersectionObserver(function (e, o) {
+      if (e[0].isIntersecting) { c.classList.remove('wait'); c.classList.add('play'); o.disconnect(); }
+    }, { threshold: 0.4 }).observe(c);
+  })();
   // Step cards: the arrow buttons scroll one card at a time.
   document.querySelectorAll(".steps-nav").forEach(function (b) {
     b.addEventListener("click", function () {
