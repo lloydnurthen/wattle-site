@@ -35,20 +35,30 @@
 
   <h2>What we keep</h2>
   <ul>
-    <li>What you type in the form: your name, email, mobile (if you give it), postcode and suburb, electricity network, power supply, retailer, battery, solar size and who told you about wattle.</li>
+    <li>What you type in the form: your name, email, mobile (if you give it), country, postcode and suburb, electricity network, power supply, retailer, battery, solar size and who told you about wattle.</li>
+    <li>If you give them: your power plan's rates, and a photo or PDF of your power bill (see <a href="#bills">Your power bill</a>).</li>
     <li>The date you registered, and a scrambled code made from your internet address. We use the code only to stop one place sending lots of registrations; it can't be turned back into the address.</li>
     <li>Emails we send you and you send us, and Lloyd's notes about setting you up.</li>
   </ul>
   <p>We never ask for your Tesla or Amber password. If you connect them later, you sign in on their own websites.</p>
 
+  <h2 id="bills">Your power bill</h2>
+  <p>If your retailer doesn't share live prices with wattle (everyone in New Zealand, and Australians not on Amber), wattle needs your plan's rates. You can type them in, or add a photo or PDF of your bill.</p>
+  <ul>
+    <li>A bill shows more than the rates: usually your name, address, account number, meter or ICP number, and what you used and paid. We only use it to get your plan's rates.</li>
+    <li>To save typing, we may send your bill to Anthropic's Claude to read the rates off it. Lloyd checks what it read before using it. Anthropic doesn't use what we send it through its API to train its models.</li>
+    <li>We delete the bill once your rates are set up, or after 90 days at most, whichever comes first. We keep the rates themselves while you use wattle.</li>
+    <li>Only Lloyd can open it. It's never emailed around.</li>
+  </ul>
+
   <h2>Why</h2>
   <p>To work out whether wattle suits your home, to get in touch with you about it, and to set you up if you go ahead. We don't sell your details, use them for advertising, or share them with anyone else.</p>
 
   <h2>Who sees it</h2>
-  <p>Only Lloyd. Your details are stored with Cloudflare, and emails are sent through Resend and received in iCloud. These services may store data outside Australia. The page also loads its font from Google Fonts.</p>
+  <p>Only Lloyd. Your details and any bill are stored with Cloudflare, emails are sent through Resend and received in iCloud, and bills may be read by Anthropic as described above. These services may store or process data outside Australia and New Zealand. The page also loads its font from Google Fonts.</p>
 
   <h2>Changing or deleting your details</h2>
-  <p>Reply to any wattle email, or write to <a href="mailto:wattle@nurthen.au">wattle@nurthen.au</a>. Ask us to correct anything, or say "remove me" and we'll delete your details. We keep only a note that you asked, so we don't contact you again.</p>
+  <p>Reply to any wattle email, or write to <a href="mailto:wattle@nurthen.au">wattle@nurthen.au</a>. Ask for a copy of what we hold, ask us to correct anything, or say "remove me" and we'll delete your details, including any bill. We keep only a note that you asked, so we don't contact you again.</p>
 
   <h2>Questions</h2>
   <p>Email <a href="mailto:wattle@nurthen.au">wattle@nurthen.au</a>.</p>

@@ -56,6 +56,23 @@
   .unit span { padding: 0 14px; font-size: 15px; font-weight: 600; color: #5B6B64; }
   .note { display: flex; gap: 12px; align-items: flex-start; background: #FFF6DC; border-radius: 14px; padding: 14px 16px; font-size: 14px; line-height: 1.5; color: #4A3500; }
   .end { display: flex; flex-direction: column; gap: 16px; border-top: 1px solid #E1E8E4; padding-top: 24px; }
+  .rate { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; background: #F3F6F4; border-radius: 16px; padding: 14px; align-items: end; }
+  .rate .name { grid-column: 1 / -1; margin-right: 54px; }
+  .rate .x { position: absolute; top: 37px; right: 14px; }
+  .rate input[type=time] { padding: 0 8px; }
+  .rate .f label { font-size: 13px; }
+  .rate input, .rate select { height: 44px; }
+  .x { width: 44px; height: 44px; border-radius: 22px; border: 1px solid #C9D6D0; background: #fff; font-size: 20px; color: #5B6B64; cursor: pointer; }
+  .add { align-self: flex-start; height: 44px; padding: 0 18px; border-radius: 22px; border: 1.5px dashed #0F6E56; background: #fff; color: #0F6E56; font-weight: 700; font-size: 15px; cursor: pointer; }
+  .or { display: flex; align-items: center; gap: 12px; color: #5B6B64; font-size: 14px; font-weight: 600; }
+  .or::before, .or::after { content: ""; flex: 1; height: 1px; background: #E1E8E4; }
+  .drop { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1.5px dashed #9FB8AD; border-radius: 16px; padding: 22px 16px; text-align: center; cursor: pointer; background: #FAFCFB; }
+  .drop strong { font-size: 16px; color: #0F6E56; }
+  .drop input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .drop:focus-within { outline: 3px solid #9FD3BF; outline-offset: 1px; }
+  .chosen { display: flex; flex-direction: column; gap: 8px; }
+  .chosen div { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #E3F2EC; border-radius: 12px; padding: 8px 8px 8px 14px; font-size: 14px; font-weight: 600; min-width: 0; }
+  .chosen span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .consent { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 1.5; cursor: pointer; }
   .consent input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: #0F6E56; flex: 0 0 auto; }
   .go { height: 54px; border-radius: 27px; border: none; background: #0F6E56; color: #fff; font-size: 17px; font-weight: 800; cursor: pointer; }
@@ -85,7 +102,7 @@
     <p>wattle is open to friends and family for now. Tell us about your home and Lloyd will be in touch about whether it suits.</p>
     <div class="points">
       <div class="point"><span class="num">1</span>About two minutes</div>
-      <div class="point"><span class="num">2</span>No passwords here. You connect Tesla and Amber later, on their own sites.</div>
+      <div class="point"><span class="num">2</span>No passwords here. You connect Tesla (and Amber, in Australia) later, on their own sites.</div>
       <div class="point"><span class="num">3</span>Not sure of an answer? Leave it. We'll work it out with you.</div>
     </div>
   </aside>
@@ -97,7 +114,7 @@
       <p style="margin:0;font-size:17px;line-height:1.5;color:#3E4D47" id="thanks-sub">We've emailed you a copy from wattle@nurthen.au. Here's what happens next.</p>
       <ol>
         <li><span class="num">1</span><span><strong>Lloyd looks over your details.</strong> He'll reply by email if anything's unclear.</span></li>
-        <li><span class="num">2</span><span><strong>If wattle suits your home, you get an invite.</strong> It has a link to connect Tesla and Amber and choose your Powerwall.</span></li>
+        <li><span class="num">2</span><span><strong>If wattle suits your home, you get an invite.</strong> It has a link to connect Tesla, choose your Powerwall, and connect Amber or, in New Zealand, enter your power plan's rates.</span></li>
         <li><span class="num">3</span><span><strong>wattle watches first.</strong> A few days of plans and a report before you switch it on.</span></li>
       </ol>
       <p class="hint">Can't see the email? Check your junk folder, and add wattle@nurthen.au to your contacts.</p>
@@ -120,10 +137,19 @@
 
       <fieldset>
         <legend>Your home</legend>
+        <div class="f">
+          <span class="label" id="country-label">Country</span>
+          <div class="pills" role="radiogroup" aria-labelledby="country-label">
+            <label><input type="radio" name="country" value="AU"><span>Australia</span></label>
+            <label><input type="radio" name="country" value="NZ"><span>New Zealand</span></label>
+          </div>
+        </div>
+        <div id="home-rest" hidden style="display:flex;flex-direction:column;gap:14px">
         <div class="row">
           <div class="f short"><label for="postcode">Postcode</label><input id="postcode" name="postcode" inputmode="numeric" maxlength="4" autocomplete="postal-code" placeholder="2000" required></div>
-          <div class="f"><label for="suburb">Suburb <span class="opt">(optional)</span></label><input id="suburb" name="suburb" autocomplete="address-level2" maxlength="60"></div>
+          <div class="f"><label for="suburb-pick">Suburb</label><select id="suburb-pick" disabled><option value="">Enter your postcode first</option></select></div>
         </div>
+        <div class="f" id="suburb-own" hidden><label for="suburb">Your suburb</label><input id="suburb" name="suburb" autocomplete="address-level2" maxlength="60"></div>
         <div class="found" id="one-network" hidden>
           <div class="icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#FFC940" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L4 11h5l-1 7 7-9h-5z"/></svg></div>
           <div><small>Your electricity network</small><strong id="one-network-name"></strong></div>
@@ -132,14 +158,15 @@
           <label for="network">Which network is on your power bill?</label>
           <select id="network" name="network"></select>
         </div>
-        <p class="hint" id="network-hint">Your network owns the poles and wires. It's printed on your power bill. Not sure? Leave it, and we'll find it when you connect.</p>
+        <p class="hint" id="network-hint"></p>
+        </div>
 
         <div class="f">
           <span class="label" id="phase-label">Power supply</span>
           <div class="pills" role="radiogroup" aria-labelledby="phase-label">
             <label><input type="radio" name="phase" value="Single phase"><span>Single phase</span></label>
             <label><input type="radio" name="phase" value="Three phase"><span>Three phase</span></label>
-            <label><input type="radio" name="phase" value="Not sure" checked><span>Not sure</span></label>
+            <label><input type="radio" name="phase" value="Not sure"><span>Not sure</span></label>
           </div>
         </div>
       </fieldset>
@@ -148,22 +175,19 @@
         <legend>Your energy</legend>
         <div class="f">
           <label for="retailer">Who do you buy power from?</label>
-          <select id="retailer" name="retailer">
-            <option>Amber Electric</option><option>AGL</option><option>Origin</option><option>EnergyAustralia</option>
-            <option>Red Energy</option><option>Alinta Energy</option><option>Powershop</option><option>Globird</option><option>Another retailer</option>
-          </select>
+          <select id="retailer" name="retailer"></select>
         </div>
         <div class="note" id="not-amber" hidden>wattle needs Amber's live prices to work. Register anyway: we'll look at your usage and tell you honestly whether switching is worth it.</div>
 
         <div class="f">
           <span class="label" id="battery-label">Battery</span>
           <div class="pills" role="radiogroup" aria-labelledby="battery-label">
-            <label><input type="radio" name="battery" value="Powerwall 3" checked><span>Powerwall 3</span></label>
+            <label><input type="radio" name="battery" value="Powerwall 3"><span>Powerwall 3</span></label>
             <label><input type="radio" name="battery" value="Powerwall 2"><span>Powerwall 2</span></label>
             <label><input type="radio" name="battery" value="Another battery"><span>Another battery</span></label>
           </div>
         </div>
-        <div class="row" id="how-many" style="align-items:center">
+        <div class="row" id="how-many" style="align-items:center" hidden>
           <span class="label" id="count-label">How many?</span>
           <div class="stepper" role="group" aria-labelledby="count-label">
             <button type="button" id="less" aria-label="One fewer">−</button><output id="count" aria-live="polite">1</output><button type="button" id="more" aria-label="One more">+</button>
@@ -188,6 +212,34 @@
         </div>
       </fieldset>
 
+      <fieldset id="plan-box" hidden>
+        <legend>Your power plan <span class="opt" style="font-size:16px">(optional)</span></legend>
+        <p class="hint" id="plan-why" style="margin-top:-8px;font-size:15px"></p>
+
+        <div class="f">
+          <label for="plan_name">Plan name <span class="opt">(optional)</span></label>
+          <input id="plan_name" maxlength="80" placeholder="e.g. Good Nights">
+        </div>
+        <div id="rates" style="display:flex;flex-direction:column;gap:10px"></div>
+        <button type="button" class="add" id="add-rate">+ Add a rate</button>
+        <p class="hint" style="margin:0">Add one rate for each time of day on your plan, with GST. Free hours are a rate of 0. Same price all day? One rate, with the same start and end time.</p>
+        <div class="row">
+          <div class="f"><label for="daily_cents">Daily charge</label><div class="unit"><input id="daily_cents" inputmode="decimal" maxlength="7" placeholder="230"><span>c/day</span></div></div>
+          <div class="f"><label for="buyback_cents">Solar buy-back</label><div class="unit"><input id="buyback_cents" inputmode="decimal" maxlength="6" placeholder="12"><span>c/kWh</span></div></div>
+        </div>
+
+        <div class="or">or</div>
+
+        <label class="drop" for="bills">
+          <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3v12H4z"/><circle cx="12" cy="13" r="4"/></svg>
+          <strong>Add a photo or PDF of your bill</strong>
+          <span class="hint">Up to 3 files. The page with the rates is enough. We'll read the rates off it for you.</span>
+          <input type="file" id="bills" accept="image/*,application/pdf" multiple>
+        </label>
+        <div class="chosen" id="chosen"></div>
+        <p class="hint" style="margin:0">Your bill shows your name, address and account number. Only Lloyd sees it, and it's deleted once your rates are set up, or after 90 days at most. <a href="/privacy/#bills">How we handle bills</a></p>
+      </fieldset>
+
       <div class="trap" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
 
       <div class="end">
@@ -200,31 +252,164 @@
 
 <footer><div>
   <span>© 2026 Lloyd Nurthen. All rights reserved. wattle isn't affiliated with Tesla or Amber Electric.</span>
-  <span><a href="/privacy/">Privacy</a></span>
+  <span><a href="/privacy/">Privacy</a> · Suburb names from <a href="https://www.geonames.org/">GeoNames</a> (CC BY 4.0)</span>
 </div></footer>
 
 <script type="module">
-import { networksFor, stateFor } from "./networks.js";
+import { RETAILERS, networksFor, stateFor } from "./networks.js";
 const ENDPOINT = "https://wattle-api.nurthen.au/api/interest";
 const $ = (id) => document.getElementById(id);
 const form = $("form");
 let count = 1;
 
+const HINTS = {
+  AU: "Your network owns the poles and wires. It's printed on your power bill. Not sure? Choose Not sure, and we'll find it when you connect.",
+  NZ: "Your lines company owns the poles and wires. It's usually on your power bill. Not sure? Choose Not sure.",
+};
+const country = () => (form.elements.country ? form.elements.country.value : "");
+
+const choose = (text) => Object.assign(new Option(text, ""), { disabled: true, selected: true });
+function showCountry() {
+  const c = country();
+  $("home-rest").hidden = !c;
+  const before = $("retailer").value;
+  if (!c) { $("retailer").replaceChildren(choose("Choose your country first")); showRetailer(); return; }
+  $("retailer").replaceChildren(choose("Choose your retailer"), ...RETAILERS[c].map((r) => new Option(r, r)));
+  if (RETAILERS[c].includes(before)) $("retailer").value = before;
+  $("postcode").placeholder = c === "NZ" ? "6011" : "2000";
+  $("network-hint").textContent = HINTS[c];
+  $("pick-network").querySelector("label").textContent = c === "NZ" ? "Which lines company is on your power bill?" : "Which network is on your power bill?";
+  showRetailer();
+  showNetworks();
+  showSuburbs();
+}
+function showRetailer() {
+  const r = $("retailer").value, nz = country() === "NZ", amber = !nz && r === "Amber Electric";
+  $("not-amber").hidden = nz || amber || !r;
+  $("plan-box").hidden = amber || !r;
+  $("plan-why").textContent = nz
+    ? "In New Zealand, wattle works from your plan's rates. Type them in from your bill or your retailer's app, or just add a photo of your bill. You can also skip this and do it when you connect."
+    : "Not on Amber? Your rates help us tell you honestly whether switching would pay. Type them in or add a photo of your bill.";
+}
+
+// Rates on the plan: one card per time of day.
+const DAYS = ["Every day", "Weekdays", "Weekends"];
+let rateNo = 0;
+function addRate(r = {}) {
+  const n = ++rateNo, id = (k) => "rate-" + k + "-" + n;
+  const box = document.createElement("div");
+  box.className = "rate";
+  box.innerHTML = `
+    <div class="f name"><label for="${id("label")}">Name</label><input id="${id("label")}" data-k="label" maxlength="40" placeholder="e.g. Peak, Night, Free hours"></div>
+    <button type="button" class="x" aria-label="Remove this rate">×</button>
+    <div class="f"><label for="${id("cents")}">Price (c/kWh)</label><input id="${id("cents")}" data-k="cents" inputmode="decimal" maxlength="6" placeholder="34.5"></div>
+    <div class="f days"><label for="${id("days")}">Days</label><select id="${id("days")}" data-k="days"><option value="" disabled selected>Choose</option>${DAYS.map((d) => `<option>${d}</option>`).join("")}</select></div>
+    <div class="f"><label for="${id("from")}">From</label><input type="time" id="${id("from")}" data-k="from" step="1800"></div>
+    <div class="f to"><label for="${id("to")}">To</label><input type="time" id="${id("to")}" data-k="to" step="1800"></div>`;
+  for (const [k, v] of Object.entries(r)) { const input = box.querySelector(`[data-k="${k}"]`); if (input) input.value = v; }
+  box.querySelector(".x").onclick = () => { box.remove(); $("add-rate").hidden = false; };
+  $("rates").append(box);
+  $("add-rate").hidden = $("rates").children.length >= 8;
+}
+$("add-rate").onclick = () => addRate();
+addRate();
+
+function planFromForm() {
+  const rates = [...$("rates").children].map((box) => Object.fromEntries([...box.querySelectorAll("[data-k]")].map((i) => [i.dataset.k, i.value.trim()])))
+    .filter((r) => r.cents !== "");
+  const plan = { name: $("plan_name").value.trim(), rates, daily_cents: $("daily_cents").value.trim(), buyback_cents: $("buyback_cents").value.trim() };
+  return plan.name || rates.length || plan.daily_cents || plan.buyback_cents ? plan : undefined;
+}
+
+// Bills: photos are shrunk on the phone (long side 2000px, JPEG) so they send quickly.
+let bills = [];
+const MAX_BILLS = 3, MAX_BYTES = 5 * 1024 * 1024;
+async function shrink(file) {
+  if (!file.type.startsWith("image/") || file.type === "image/gif") return file;
+  try {
+    const img = await createImageBitmap(file);
+    const scale = Math.min(1, 2000 / Math.max(img.width, img.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(img.width * scale); canvas.height = Math.round(img.height * scale);
+    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((ok) => canvas.toBlob(ok, "image/jpeg", 0.82));
+    return blob && blob.size < file.size ? new File([blob], file.name.replace(/\.[^.]*$/, "") + ".jpg", { type: "image/jpeg" }) : file;
+  } catch (e) { return file; } // a format this browser can't open: send it as it is
+}
+function showBills() {
+  $("chosen").replaceChildren(...bills.map((f, i) => {
+    const row = document.createElement("div");
+    const name = document.createElement("span"); name.textContent = f.name + " · " + (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(f.size / 1024)) + " KB");
+    const x = document.createElement("button"); x.type = "button"; x.className = "x"; x.textContent = "×"; x.setAttribute("aria-label", "Remove " + f.name);
+    x.onclick = () => { bills.splice(i, 1); showBills(); };
+    row.append(name, x); return row;
+  }));
+  $("bills").closest(".drop").hidden = bills.length >= MAX_BILLS;
+}
+$("bills").addEventListener("change", async (e) => {
+  const picked = [...e.target.files];
+  e.target.value = "";
+  const problems = [];
+  for (const f of picked) {
+    if (bills.length >= MAX_BILLS) { problems.push("You can add up to 3 files."); break; }
+    if (!f.type.startsWith("image/") && f.type !== "application/pdf") { problems.push(f.name + " isn't a photo or a PDF."); continue; }
+    const small = await shrink(f);
+    if (small.size > MAX_BYTES) { problems.push(f.name + " is too big. Each file can be up to 5 MB."); continue; }
+    bills.push(small);
+  }
+  showBills();
+  if (problems.length) showProblems(problems);
+});
+
 function showNetworks() {
   const pc = $("postcode").value.replace(/\D/g, "").slice(0, 4);
   if (pc !== $("postcode").value) $("postcode").value = pc;
-  const list = pc.length === 4 ? networksFor(pc) : [];
+  const list = pc.length === 4 ? networksFor(pc, country()) : [];
   $("one-network").hidden = list.length !== 1;
   $("pick-network").hidden = list.length < 2;
   if (list.length === 1) $("one-network-name").textContent = list[0] + " (" + stateFor(pc) + ")";
   if (list.length > 1) {
     const before = $("network").value;
-    $("network").replaceChildren(...["Not sure", ...list].map((n) => new Option(n === "Not sure" ? "Not sure" : n, n)));
+    $("network").replaceChildren(choose(country() === "NZ" ? "Choose your lines company" : "Choose your network"), ...[...list, "Not sure"].map((n) => new Option(n, n)));
     if (list.includes(before)) $("network").value = before;
   }
 }
-$("postcode").addEventListener("input", showNetworks);
-$("retailer").addEventListener("change", () => { $("not-amber").hidden = $("retailer").value === "Amber Electric"; });
+$("postcode").addEventListener("input", () => { showNetworks(); showSuburbs(); });
+
+// Suburbs for the postcode (GeoNames, CC BY 4.0; built by tools/build-places.py).
+const placeFiles = {};
+const OTHER = "__other";
+async function placesFor(c, pc) {
+  const file = c === "NZ" ? "nz" : "au-" + pc[0];
+  if (!placeFiles[file]) placeFiles[file] = fetch("./places/" + file + ".json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+  return (await placeFiles[file])[pc] || [];
+}
+let suburbFor = "";
+async function showSuburbs() {
+  const c = country(), pc = $("postcode").value, pick = $("suburb-pick");
+  const key = c + pc;
+  if (key === suburbFor) return;
+  suburbFor = key;
+  if (!c || pc.length !== 4) {
+    pick.disabled = true; pick.replaceChildren(choose("Enter your postcode first")); $("suburb-own").hidden = true; return;
+  }
+  const before = pick.value;
+  const list = await placesFor(c, pc);
+  if (suburbFor !== key) return; // they kept typing
+  pick.disabled = false;
+  pick.replaceChildren(choose(list.length ? "Choose your suburb" : "We couldn't find that postcode"),
+    ...list.map((n) => new Option(n, n)), new Option(list.length ? "My suburb isn't listed" : "Type my suburb", OTHER));
+  if (list.includes(before)) pick.value = before;
+  else if (!list.length) pick.value = OTHER;
+  $("suburb-own").hidden = pick.value !== OTHER;
+}
+$("suburb-pick").addEventListener("change", () => {
+  $("suburb-own").hidden = $("suburb-pick").value !== OTHER;
+  if ($("suburb-pick").value === OTHER) $("suburb").focus();
+});
+$("retailer").addEventListener("change", showRetailer);
+form.addEventListener("change", (e) => { if (e.target.name === "country") showCountry(); });
+showCountry();
 form.addEventListener("change", (e) => {
   if (e.target.name !== "battery") return;
   const other = e.target.value === "Another battery";
@@ -237,24 +422,47 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const v = (n) => (form.elements[n] ? form.elements[n].value : "");
   const pc = v("postcode");
-  const list = networksFor(pc);
+  const list = networksFor(pc, country());
   const body = {
-    first_name: v("first_name"), last_name: v("last_name"), email: v("email"), mobile: v("mobile"),
-    postcode: pc, suburb: v("suburb"),
-    network: list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : v("network")),
+    country: country(), first_name: v("first_name"), last_name: v("last_name"), email: v("email"), mobile: v("mobile"),
+    postcode: pc, suburb: $("suburb-pick").value === OTHER ? v("suburb").trim() : $("suburb-pick").value,
+    network: list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : $("network").value),
     phase: v("phase"), retailer: v("retailer"), battery: v("battery"), battery_count: count,
     other_battery: v("other_battery"), solar_kw: v("solar_kw"), heard_from: v("heard_from"),
     website: v("website"), consent: $("consent").checked,
+    plan: $("plan-box").hidden ? undefined : planFromForm(),
   };
+  const files = $("plan-box").hidden ? [] : bills;
   const problems = [];
   if (!body.first_name.trim()) problems.push("Please add your first name.");
   if (!/^\S+@\S+\.\S+$/.test(body.email.trim())) problems.push("Please check your email address.");
-  if (!/^\d{4}$/.test(pc)) problems.push("Please add your four-digit postcode.");
+  if (!body.country) problems.push("Please choose your country.");
+  else if (!/^\d{4}$/.test(pc)) problems.push("Please add your four-digit postcode.");
+  else {
+    if (!body.suburb) problems.push("Please choose your suburb.");
+    if (!body.network) problems.push(country() === "NZ" ? "Please choose your lines company, or Not sure." : "Please choose your network, or Not sure.");
+  }
+  if (!body.phase) problems.push("Please choose your power supply, or Not sure.");
+  if (!body.retailer) problems.push("Please choose who you buy power from.");
+  if (!body.battery) problems.push("Please choose your battery.");
+  else if (body.battery === "Another battery" && !body.other_battery.trim()) problems.push("Please tell us which battery you have.");
+  (body.plan ? body.plan.rates : []).forEach((r, i) => {
+    if (!r.days || !r.from || !r.to) problems.push("Rate " + (i + 1) + (r.label ? " (" + r.label + ")" : "") + ": please choose the days and times.");
+  });
   if (!body.consent) problems.push("Please tick the box so we can email you.");
   if (problems.length) return showProblems(problems);
   $("go").disabled = true; $("go").textContent = "Sending…";
   try {
-    const res = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    let res;
+    if (files.length) {
+      const data = new FormData();
+      data.set("data", JSON.stringify(body));
+      files.forEach((f) => data.append("bill", f, f.name));
+      $("go").textContent = "Sending your bill…";
+      res = await fetch(ENDPOINT, { method: "POST", body: data });
+    } else {
+      res = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    }
     const out = await res.json().catch(() => ({}));
     if (res.status >= 500 || res.status === 404) throw Object.assign(new Error("unavailable"), { offline: true });
     if (!res.ok || !out.ok) throw new Error((out.problems || ["Something went wrong. Please try again in a minute."]).join(" "));
@@ -276,10 +484,17 @@ form.addEventListener("submit", async (e) => {
 function mailtoFor(b) {
   const lines = [
     "Name: " + [b.first_name, b.last_name].filter(Boolean).join(" "), "Email: " + b.email, "Mobile: " + (b.mobile || "-"),
-    "Postcode: " + b.postcode + (b.suburb ? " (" + b.suburb + ")" : ""), "Network: " + b.network, "Power supply: " + b.phase,
+    "Postcode: " + b.postcode + (b.suburb ? " (" + b.suburb + ")" : "") + (b.country === "NZ" ? ", New Zealand" : ""), "Network: " + b.network, "Power supply: " + b.phase,
     "Retailer: " + b.retailer, "Battery: " + (b.battery === "Another battery" ? (b.other_battery || "Another battery") : b.battery_count + " x " + b.battery),
     "Solar: " + (b.solar_kw ? b.solar_kw + " kW" : "-"), "Heard about wattle from: " + (b.heard_from || "-"),
   ];
+  if (b.plan) {
+    lines.push("", "Power plan: " + (b.plan.name || "-"));
+    b.plan.rates.forEach((r) => lines.push("- " + (r.label || "Rate") + ": " + r.cents + "c/kWh, " + r.from + " to " + r.to + ", " + r.days));
+    if (b.plan.daily_cents) lines.push("Daily charge: " + b.plan.daily_cents + "c/day");
+    if (b.plan.buyback_cents) lines.push("Solar buy-back: " + b.plan.buyback_cents + "c/kWh");
+  }
+  if (bills.length) lines.push("", "(I'll attach a photo of my bill to this email.)");
   return "mailto:wattle@nurthen.au?subject=" + encodeURIComponent("Register interest: " + b.first_name) +
     "&body=" + encodeURIComponent("Hi Lloyd,\n\nI'd like to register my interest in wattle.\n\n" + lines.join("\n") + "\n");
 }
