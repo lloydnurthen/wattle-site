@@ -152,7 +152,8 @@
         <div class="f" id="suburb-own" hidden><label for="suburb">Your suburb</label><input id="suburb" name="suburb" autocomplete="address-level2" maxlength="60"></div>
         <div class="found" id="one-network" hidden>
           <div class="icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#FFC940" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L4 11h5l-1 7 7-9h-5z"/></svg></div>
-          <div><small>Your electricity network</small><strong id="one-network-name"></strong></div>
+          <div style="flex:1 1 auto;min-width:0"><small id="one-network-label">Your electricity network</small><strong id="one-network-name"></strong></div>
+          <button type="button" id="change-network" hidden style="border:none;background:none;color:#0F6E56;font:inherit;font-size:14px;font-weight:700;cursor:pointer;padding:8px 0;white-space:nowrap">Not right?</button>
         </div>
         <div class="f" id="pick-network" hidden>
           <label for="network">Which network is on your power bill?</label>
@@ -252,11 +253,11 @@
 
 <footer><div>
   <span>© 2026 Lloyd Nurthen. All rights reserved. wattle isn't affiliated with Tesla or Amber Electric.</span>
-  <span><a href="/privacy/">Privacy</a> · Suburb names from <a href="https://www.geonames.org/">GeoNames</a> (CC BY 4.0)</span>
+  <span><a href="/privacy/">Privacy</a> · Suburb names from <a href="https://www.geonames.org/">GeoNames</a> (CC BY 4.0) and <a href="https://github.com/s01ipsist/open_nz_postcodes">Open NZ Postcodes</a></span>
 </div></footer>
 
 <script type="module">
-import { RETAILERS, networksFor, stateFor } from "./networks.js";
+import { NZ_NETWORKS, RETAILERS, networksFor, stateFor } from "./networks.js";
 const ENDPOINT = "https://wattle-api.nurthen.au/api/interest";
 const $ = (id) => document.getElementById(id);
 const form = $("form");
@@ -272,6 +273,7 @@ const choose = (text) => Object.assign(new Option(text, ""), { disabled: true, s
 function showCountry() {
   const c = country();
   $("home-rest").hidden = !c;
+  delete $("one-network").dataset.changed;
   const before = $("retailer").value;
   if (!c) { $("retailer").replaceChildren(choose("Choose your country first")); showRetailer(); return; }
   $("retailer").replaceChildren(choose("Choose your retailer"), ...RETAILERS[c].map((r) => new Option(r, r)));
@@ -361,20 +363,40 @@ $("bills").addEventListener("change", async (e) => {
   if (problems.length) showProblems(problems);
 });
 
-function showNetworks() {
+// New Zealand: the lines company for the postcode where we know it (tools/build-places.py).
+let nzLines = null, autoNetwork = "", networkFor = "";
+const loadNzLines = () => (nzLines = nzLines || fetch("./places/nz-lines.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
+async function showNetworks() {
   const pc = $("postcode").value.replace(/\D/g, "").slice(0, 4);
   if (pc !== $("postcode").value) $("postcode").value = pc;
-  const list = pc.length === 4 ? networksFor(pc, country()) : [];
+  const c = country(), key = c + pc;
+  if (key !== networkFor) { networkFor = key; autoNetwork = ""; }
+  let list = pc.length === 4 ? networksFor(pc, c) : [];
+  if (c === "NZ" && pc.length === 4 && networkFor === key && !$("one-network").dataset.changed) {
+    const known = (await loadNzLines())[pc];
+    if (networkFor !== key) return; // they kept typing
+    if (known) { autoNetwork = known; list = [known]; }
+  }
   $("one-network").hidden = list.length !== 1;
   $("pick-network").hidden = list.length < 2;
-  if (list.length === 1) $("one-network-name").textContent = list[0] + " (" + stateFor(pc) + ")";
+  $("change-network").hidden = !autoNetwork;
+  $("network-hint").hidden = !!autoNetwork;
+  $("one-network-label").textContent = autoNetwork ? "Your lines company, from your postcode" : "Your electricity network";
+  if (list.length === 1) $("one-network-name").textContent = autoNetwork ? list[0] : list[0] + " (" + stateFor(pc) + ")";
   if (list.length > 1) {
     const before = $("network").value;
     $("network").replaceChildren(choose(country() === "NZ" ? "Choose your lines company" : "Choose your network"), ...[...list, "Not sure"].map((n) => new Option(n, n)));
     if (list.includes(before)) $("network").value = before;
   }
 }
-$("postcode").addEventListener("input", () => { showNetworks(); showSuburbs(); });
+$("postcode").addEventListener("input", () => { delete $("one-network").dataset.changed; showNetworks(); showSuburbs(); });
+$("change-network").onclick = () => {
+  // Our postcode match was wrong: let them pick from every lines company.
+  $("one-network").dataset.changed = "1"; autoNetwork = "";
+  $("one-network").hidden = true; $("pick-network").hidden = false;
+  $("network").replaceChildren(choose("Choose your lines company"), ...[...NZ_NETWORKS, "Not sure"].map((n) => new Option(n, n)));
+  $("network").focus();
+};
 
 // Suburbs for the postcode (GeoNames, CC BY 4.0; built by tools/build-places.py).
 const placeFiles = {};
@@ -426,7 +448,8 @@ form.addEventListener("submit", async (e) => {
   const body = {
     country: country(), first_name: v("first_name"), last_name: v("last_name"), email: v("email"), mobile: v("mobile"),
     postcode: pc, suburb: $("suburb-pick").value === OTHER ? v("suburb").trim() : $("suburb-pick").value,
-    network: list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : $("network").value),
+    network: autoNetwork && $("pick-network").hidden ? autoNetwork
+      : list.length === 1 ? list[0] : ($("pick-network").hidden ? "Not sure" : $("network").value),
     phase: v("phase"), retailer: v("retailer"), battery: v("battery"), battery_count: count,
     other_battery: v("other_battery"), solar_kw: v("solar_kw"), heard_from: v("heard_from"),
     website: v("website"), consent: $("consent").checked,
